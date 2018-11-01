@@ -1,4 +1,4 @@
-package PACKAGE_NAME;
-
-public class King {
+public class King
+{
+    // extend checker
 }

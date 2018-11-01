@@ -1,4 +1,14 @@
-package PACKAGE_NAME;
+public class CheckersGame
+{
+    private Board board;
 
-public class CheckersGame {
+    public CheckersGame()
+    {
+        board = new Board();
+    }
+
+    public Board getBoard()
+    {
+        return board;
+    }
 }
