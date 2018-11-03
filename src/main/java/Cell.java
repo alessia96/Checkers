@@ -32,7 +32,7 @@ public class Cell
         return occupied;
     }
 
-    public Checker getCheckerOccupying()
+    public Checker getChecker()
     {
         return checkerOccupying;
     }
@@ -53,4 +53,8 @@ public class Cell
             return " ";
         }
     }
+
+    public int getRow() { return row; }
+
+    public int getColumn() { return column; }
 }
