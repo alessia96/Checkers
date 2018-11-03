@@ -1,5 +1,3 @@
-import javafx.scene.control.Button;
-
 public class UserController
 {
     private Cell sourceCell;
@@ -13,12 +11,15 @@ public class UserController
     public void targetSelectEvt(Cell targetCell)
     {
         this.targetCell = targetCell;
-        makeMove();
     }
 
-    private void makeMove()
+    public void makeMove()
     {
         targetCell.occupyCell(sourceCell.getChecker());
         sourceCell.emptyCell();
     }
+
+    public Cell getSource() { return sourceCell; }
+
+    public Cell getTarget() { return targetCell; }
 }

@@ -32,19 +32,29 @@ public class GUI extends Application
                             Button btn = new Button(board.getCellAt(row, col).toString());
                             btn.setOnAction((event) ->
                             {
-                                if (board.getCellAt(row, col).isOccupied()) // source cell
-                                {
-                                    sourceCell = btn;
-                                    match.getUserController().sourceSelectEvt(board.getCellAt(row, col));
-                                }
-                                else if (sourceCell != null && !board.getCellAt(row, col).isOccupied())   // target cell
+                                if (sourceCell != null)   // target cell
                                 {
                                     targetCell = btn;
                                     match.getUserController().targetSelectEvt(board.getCellAt(row, col));
-                                    sourceCell.setText(" ");
-                                    targetCell.setText(board.getCellAt(row, col).toString());
+
+                                    if (match.isMoveValid())
+                                    {
+                                        match.getUserController().makeMove();
+                                        sourceCell.setText(" ");
+                                        targetCell.setText(board.getCellAt(row, col).toString());
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Move not valid");
+                                    }
+
                                     sourceCell = null;
                                     targetCell = null;
+                                }
+                                else if (board.getCellAt(row, col).isOccupied()) // source cell
+                                {
+                                    sourceCell = btn;
+                                    match.getUserController().sourceSelectEvt(board.getCellAt(row, col));
                                 }
                             });
                             btn.setPrefSize(30, 30);

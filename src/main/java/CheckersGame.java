@@ -15,4 +15,17 @@ public class CheckersGame
     }
 
     public UserController getUserController() { return userController; }
+
+    public boolean isMoveValid()
+    {
+        Cell source = userController.getSource();
+        Cell target = userController.getTarget();
+
+        if (source != target)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
