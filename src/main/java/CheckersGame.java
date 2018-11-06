@@ -63,23 +63,31 @@ public class CheckersGame
     private boolean isCheckerInBetween()
     {
         if (source.getChecker().isBlack() && source.getColumn() < target.getColumn() &&
-                board.getCellAt(source.getRow() + 1, source.getColumn() + 1).isOccupied())
+                board.getCellAt(source.getRow() + 1, source.getColumn() + 1).isOccupied() &&
+                !board.getCellAt(source.getRow() + 1, source.getColumn() + 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() + 1, source.getColumn() + 1).emptyCell();
             return true;
         }
         else if (source.getChecker().isBlack() && source.getColumn() > target.getColumn() &&
-                    board.getCellAt(source.getRow() + 1, source.getColumn() - 1).isOccupied())
+                    board.getCellAt(source.getRow() + 1, source.getColumn() - 1).isOccupied() &&
+                    !board.getCellAt(source.getRow() + 1, source.getColumn() - 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() + 1, source.getColumn() - 1).emptyCell();
             return true;
         }
         else if (!source.getChecker().isBlack() && source.getColumn() < target.getColumn() &&
-                    board.getCellAt(source.getRow() - 1, source.getColumn() + 1).isOccupied())
+                    board.getCellAt(source.getRow() - 1, source.getColumn() + 1).isOccupied() &&
+                    board.getCellAt(source.getRow() - 1, source.getColumn() + 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() - 1, source.getColumn() + 1).emptyCell();
             return true;
         }
         else if (!source.getChecker().isBlack() && source.getColumn() > target.getColumn() &&
-                    board.getCellAt(source.getRow() - 1, source.getColumn() - 1).isOccupied())
+                    board.getCellAt(source.getRow() - 1, source.getColumn() - 1).isOccupied() &&
+                    board.getCellAt(source.getRow() - 1, source.getColumn() - 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() - 1, source.getColumn() - 1).emptyCell();
             return true;
         }
 
