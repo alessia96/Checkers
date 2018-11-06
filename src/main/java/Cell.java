@@ -1,11 +1,12 @@
 public class Cell
 {
     private boolean occupied;
+    private boolean black;
     private Checker checkerOccupying;
     private int row;
     private int column;
 
-    public Cell(Checker checker, int row, int column)
+    public Cell(Checker checker, int row, int column, boolean black)
     {
         if (checker != null)
         {
@@ -19,6 +20,7 @@ public class Cell
 
         this.row = row;
         this.column = column;
+        this.black = black;
     }
 
     public void occupyCell(Checker checker)
@@ -57,4 +59,6 @@ public class Cell
     public int getRow() { return row; }
 
     public int getColumn() { return column; }
+
+    public boolean isBlack() { return black; }
 }

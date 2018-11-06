@@ -1,9 +1,13 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
+import javafx.geometry.Insets;
+import java.awt.*;
 import java.util.stream.IntStream;
 
 public class GUI extends Application
@@ -14,13 +18,6 @@ public class GUI extends Application
     private Button sourceCell;
     private Button targetCell;
 
-    public static void main(String[] args)
-    {
-        match = new CheckersGame();
-        board = match.getBoard();
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage)
     {
@@ -30,6 +27,10 @@ public class GUI extends Application
                 IntStream.range(0, 8).forEach((col) ->
                         {
                             Button btn = new Button(board.getCellAt(row, col).toString());
+                            if (board.getCellAt(row, col).isBlack())
+                            {
+                                btn.setStyle("-fx-background-color: #000000");
+                            }
                             btn.setOnAction((event) ->
                             {
                                 if (sourceCell != null)   // target cell
@@ -72,5 +73,12 @@ public class GUI extends Application
         primaryStage.setTitle("Checkers");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public static void main(String[] args)
+    {
+        match = new CheckersGame();
+        board = match.getBoard();
+        launch(args);
     }
 }

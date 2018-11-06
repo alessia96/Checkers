@@ -15,7 +15,14 @@ public class Board
         {
             for (int col = 0; col < 8; col++)
             {
-                grid[row][col] = new Cell(null, row, col);
+                if ((col % 2 == 0 && row % 2 == 1) || (col % 2 == 1 && row % 2 == 0))
+                {
+                    grid[row][col] = new Cell(null, row, col, true);
+                }
+                else
+                {
+                    grid[row][col] = new Cell(null, row, col, false);
+                }
             }
         }
     }
