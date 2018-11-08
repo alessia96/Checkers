@@ -66,6 +66,7 @@ public class CheckersGame
                 board.getCellAt(source.getRow() + 1, source.getColumn() + 1).isOccupied() &&
                 !board.getCellAt(source.getRow() + 1, source.getColumn() + 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() + 1, source.getColumn() + 1).getChecker().setCaptured();
             board.getCellAt(source.getRow() + 1, source.getColumn() + 1).emptyCell();
             return true;
         }
@@ -73,6 +74,7 @@ public class CheckersGame
                     board.getCellAt(source.getRow() + 1, source.getColumn() - 1).isOccupied() &&
                     !board.getCellAt(source.getRow() + 1, source.getColumn() - 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() + 1, source.getColumn() - 1).getChecker().setCaptured();
             board.getCellAt(source.getRow() + 1, source.getColumn() - 1).emptyCell();
             return true;
         }
@@ -80,6 +82,7 @@ public class CheckersGame
                     board.getCellAt(source.getRow() - 1, source.getColumn() + 1).isOccupied() &&
                     board.getCellAt(source.getRow() - 1, source.getColumn() + 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() - 1, source.getColumn() + 1).getChecker().setCaptured();
             board.getCellAt(source.getRow() - 1, source.getColumn() + 1).emptyCell();
             return true;
         }
@@ -87,10 +90,16 @@ public class CheckersGame
                     board.getCellAt(source.getRow() - 1, source.getColumn() - 1).isOccupied() &&
                     board.getCellAt(source.getRow() - 1, source.getColumn() - 1).getChecker().isBlack())
         {
+            board.getCellAt(source.getRow() - 1, source.getColumn() - 1).getChecker().setCaptured();
             board.getCellAt(source.getRow() - 1, source.getColumn() - 1).emptyCell();
             return true;
         }
 
+        return false;
+    }
+
+    public boolean isCaptureAvailable()
+    {
         return false;
     }
 }

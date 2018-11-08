@@ -2,6 +2,7 @@ public class UserController
 {
     private Cell sourceCell;
     private Cell targetCell;
+    private boolean isUserTurn;
 
     public void sourceSelectEvt(Cell sourceCell)
     {
@@ -22,4 +23,14 @@ public class UserController
     public Cell getSource() { return sourceCell; }
 
     public Cell getTarget() { return targetCell; }
+
+    public void setUserTurn(boolean isUserTurn)
+    {
+        this.isUserTurn = isUserTurn;
+    }
+
+    public boolean isUserTurn()
+    {
+        return isUserTurn;
+    }
 }
