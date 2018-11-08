@@ -48,46 +48,40 @@ public class GUI extends Application
         IntStream.range(0, 8).forEach((row) ->
                 IntStream.range(0, 8).forEach((col) ->
                         {
-                            Button btn = new Button(board.getCellAt(row, col).toString());
                             if (board.getCellAt(row, col).isBlack())
                             {
-                                btn.getStyleClass().add("blackCell");
-                            }
-                            if (board.getCellAt(row, col).isOccupied() && !board.getCellAt(row, col).getChecker().isBlack())
-                            {
-                                btn.getStyleClass().add("whiteChecker");
-                            }
-
-                            btn.setOnAction((event) ->
-                            {
-                                if (sourceCell != null)   // target cell
+                                Button btn = new Button(board.getCellAt(row, col).toString());
+                                if (board.getCellAt(row, col).isOccupied() && !board.getCellAt(row, col).getChecker().isBlack())
                                 {
-                                    match.getUserController().targetSelectEvt(board.getCellAt(row, col));
-
-                                    if (match.isMoveValid())
-                                    {
-                                        match.getUserController().makeMove();
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Move not valid");
-                                    }
-
-                                    if (!match.isCaptureAvailable())
-                                    {
-                                        sourceCell = null;
-                                    }
+                                    btn.getStyleClass().add("whiteChecker");
                                 }
-                                else if (board.getCellAt(row, col).isOccupied()) // source cell
+
+                                btn.setOnAction((event) ->
                                 {
-                                    sourceCell = btn;
-                                    match.getUserController().sourceSelectEvt(board.getCellAt(row, col));
-                                }
-                                generateGrid();
-                                generateInfoPane();
-                            });
-                            btn.setPrefSize(30, 30);
-                            grid.add(btn, col, row);
+                                    if (sourceCell != null)   // target cell
+                                    {
+                                        match.getUserController().targetSelectEvt(board.getCellAt(row, col));
+
+                                        if (match.isMoveValid()) {
+                                            match.getUserController().makeMove();
+                                        } else {
+                                            System.out.println("Move not valid");
+                                        }
+
+                                        if (!match.isCaptureAvailable()) {
+                                            sourceCell = null;
+                                        }
+                                    } else if (board.getCellAt(row, col).isOccupied()) // source cell
+                                    {
+                                        sourceCell = btn;
+                                        match.getUserController().sourceSelectEvt(board.getCellAt(row, col));
+                                    }
+                                    generateGrid();
+                                    generateInfoPane();
+                                });
+                                btn.setPrefSize(30, 30);
+                                grid.add(btn, col, row);
+                            }
                         }
                 )
         );

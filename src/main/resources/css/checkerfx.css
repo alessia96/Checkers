@@ -1,10 +1,6 @@
 .button {
-    -fx-background-color: white;
-    -fx-text-fill: gray;
-}
-
-.blackCell {
     -fx-background-color: black;
+    -fx-text-fill: gray;
 }
 
 .whiteChecker {
