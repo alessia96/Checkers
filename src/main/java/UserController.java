@@ -1,36 +1,32 @@
+import javafx.scene.shape.Circle;
+import jfxtras.labs.util.event.MouseControlUtil;
+
+import java.util.stream.IntStream;
+
 public class UserController
 {
-    private Cell sourceCell;
-    private Cell targetCell;
-    private boolean isUserTurn;
+    private Board board;
+    public Circle[][] grid;
 
-    public void sourceSelectEvt(Cell sourceCell)
+    public UserController(Board board)
     {
-        this.sourceCell = sourceCell;
+        this.board = board;
+        grid = new Circle[board.getGrid().length][board.getGrid().length];
     }
 
-    public void targetSelectEvt(Cell targetCell)
+    public void getUserMove()
     {
-        this.targetCell = targetCell;
+        IntStream.range(0, 8).forEach((row) ->
+                IntStream.range(0, 8).forEach((col) ->
+                {
+                    MouseControlUtil.makeDraggable(grid[row][col]);
+                }
+            )
+        );
     }
 
-    public void makeMove()
+    public void setNodes(Circle[][] grid)
     {
-        targetCell.occupyCell(sourceCell.getChecker());
-        sourceCell.emptyCell();
-    }
-
-    public Cell getSource() { return sourceCell; }
-
-    public Cell getTarget() { return targetCell; }
-
-    public void setUserTurn(boolean isUserTurn)
-    {
-        this.isUserTurn = isUserTurn;
-    }
-
-    public boolean isUserTurn()
-    {
-        return isUserTurn;
+        this.grid = grid;
     }
 }

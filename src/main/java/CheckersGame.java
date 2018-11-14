@@ -2,13 +2,26 @@ public class CheckersGame
 {
     private Board board;
     private UserController userController;
-    private Cell source;
-    private Cell target;
+    private AIController aiController;
+    public enum Player { AI, HUMAN }
+    private Player turn;
 
     public CheckersGame()
     {
         board = new Board();
-        userController = new UserController();
+        userController = new UserController(board);
+        aiController = new AIController(board);
+        turn = Player.HUMAN;
+    }
+
+    public void setTurn(Player turn)
+    {
+        this.turn = turn;
+    }
+
+    public Player getTurn()
+    {
+        return turn;
     }
 
     public Board getBoard()
@@ -18,88 +31,5 @@ public class CheckersGame
 
     public UserController getUserController() { return userController; }
 
-    public boolean isMoveValid()
-    {
-        source = userController.getSource();
-        target = userController.getTarget();
-
-        if ((source == target) || !target.isBlack() ||
-                !isMovingForward() || target.isOccupied() ||
-                    !isValidJump())
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean isMovingForward()
-    {
-        if (source.getChecker().isBlack() &&
-                (source.getRow() < target.getRow()))
-        {
-            return true;
-        }
-        else if (!source.getChecker().isBlack() &&
-                    (source.getRow() > target.getRow()))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isValidJump()
-    {
-        if (((Math.abs(source.getRow() - target.getRow()) == 2) && isCheckerInBetween()) ||
-            (Math.abs(source.getRow() - target.getRow()) == 1))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isCheckerInBetween()
-    {
-        if (source.getChecker().isBlack() && source.getColumn() < target.getColumn() &&
-                board.getCellAt(source.getRow() + 1, source.getColumn() + 1).isOccupied() &&
-                !board.getCellAt(source.getRow() + 1, source.getColumn() + 1).getChecker().isBlack())
-        {
-            board.getCellAt(source.getRow() + 1, source.getColumn() + 1).getChecker().setCaptured();
-            board.getCellAt(source.getRow() + 1, source.getColumn() + 1).emptyCell();
-            return true;
-        }
-        else if (source.getChecker().isBlack() && source.getColumn() > target.getColumn() &&
-                    board.getCellAt(source.getRow() + 1, source.getColumn() - 1).isOccupied() &&
-                    !board.getCellAt(source.getRow() + 1, source.getColumn() - 1).getChecker().isBlack())
-        {
-            board.getCellAt(source.getRow() + 1, source.getColumn() - 1).getChecker().setCaptured();
-            board.getCellAt(source.getRow() + 1, source.getColumn() - 1).emptyCell();
-            return true;
-        }
-        else if (!source.getChecker().isBlack() && source.getColumn() < target.getColumn() &&
-                    board.getCellAt(source.getRow() - 1, source.getColumn() + 1).isOccupied() &&
-                    board.getCellAt(source.getRow() - 1, source.getColumn() + 1).getChecker().isBlack())
-        {
-            board.getCellAt(source.getRow() - 1, source.getColumn() + 1).getChecker().setCaptured();
-            board.getCellAt(source.getRow() - 1, source.getColumn() + 1).emptyCell();
-            return true;
-        }
-        else if (!source.getChecker().isBlack() && source.getColumn() > target.getColumn() &&
-                    board.getCellAt(source.getRow() - 1, source.getColumn() - 1).isOccupied() &&
-                    board.getCellAt(source.getRow() - 1, source.getColumn() - 1).getChecker().isBlack())
-        {
-            board.getCellAt(source.getRow() - 1, source.getColumn() - 1).getChecker().setCaptured();
-            board.getCellAt(source.getRow() - 1, source.getColumn() - 1).emptyCell();
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean isCaptureAvailable()
-    {
-        return false;
-    }
+    public AIController getAIController() { return aiController; }
 }
