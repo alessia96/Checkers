@@ -6,7 +6,8 @@ public class Board
     private Cell[][] grid;
     private int whiteCheckers;
     private int blackCheckers;
-    private Cell source, target;
+    private Checker source;
+    private Cell target;
 
     public Board()
     {
@@ -107,16 +108,37 @@ public class Board
 
     public void makeMove(Move move)
     {
-        move.getTarget().occupyCell(move.getSource().getChecker());
-        move.getSource().emptyCell();
+        move.getTarget().occupyCell(move.getSource());
+        getCellAt(move.getSource().getRow(), move.getSource().getColumn()).emptyCell();
+        System.out.println("made move");
     }
 
     public boolean isMoveValid(Move move)
     {
+        if (isSourceSameAsTarget(move) || isTargetWhite(move))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isSourceSameAsTarget(Move move)
+    {
+        return (move.getSource().getCell().getRow() == move.getTarget().getRow() &&
+            move.getSource().getCell().getColumn() == move.getTarget().getColumn());
+    }
+
+    private boolean isTargetWhite(Move move)
+    {
+        return !move.getTarget().isBlack();
+    }
+
+    /*public boolean isMoveValid(Move move)
+    {
         source = move.getSource();
         target = move.getTarget();
 
-        if ((source == target) ||
+        if ((source.getCell() == target) ||
                 !target.isBlack() ||
                 !isMovingForward() || target.isOccupied() ||
                 !isValidJump())
@@ -129,12 +151,12 @@ public class Board
 
     private boolean isMovingForward()
     {
-        if (source.getChecker().isBlack() &&
+        if (source.isBlack() &&
                 (source.getRow() < target.getRow()))
         {
             return true;
         }
-        else if (!source.getChecker().isBlack() &&
+        else if (!source.isBlack() &&
                 (source.getRow() > target.getRow()))
         {
             return true;
@@ -156,8 +178,8 @@ public class Board
 
     private boolean isCheckerInBetween()
     {
-        boolean blackSource = source.getChecker().isBlack();
-        boolean whiteSource = !source.getChecker().isBlack();
+        boolean blackSource = source.isBlack();
+        boolean whiteSource = !source.isBlack();
         boolean moveRight = source.getColumn() < target.getColumn();
         boolean moveLeft = source.getColumn() > target.getColumn();
         Cell botRight = null;
@@ -179,26 +201,18 @@ public class Board
 
         if (blackSource && moveRight && botRight.isOccupied() && !botRight.getChecker().isBlack())
         {
-            //getCellAt(source.getRow() + 1, source.getColumn() + 1).getChecker().setCaptured();
-            //getCellAt(source.getRow() + 1, source.getColumn() + 1).emptyCell();
             return true;
         }
         else if (blackSource && moveLeft && botLeft.isOccupied() && !botLeft.getChecker().isBlack())
         {
-            //getCellAt(source.getRow() + 1, source.getColumn() - 1).getChecker().setCaptured();
-            //getCellAt(source.getRow() + 1, source.getColumn() - 1).emptyCell();
             return true;
         }
         else if (whiteSource && moveRight && topRight.isOccupied() && topRight.getChecker().isBlack())
         {
-            //getCellAt(source.getRow() - 1, source.getColumn() + 1).getChecker().setCaptured();
-            //getCellAt(source.getRow() - 1, source.getColumn() + 1).emptyCell();
             return true;
         }
         else if (whiteSource && moveLeft && topLeft.isOccupied() && topLeft.getChecker().isBlack())
         {
-            //getCellAt(source.getRow() - 1, source.getColumn() - 1).getChecker().setCaptured();
-            //getCellAt(source.getRow() - 1, source.getColumn() - 1).emptyCell();
             return true;
         }
 
@@ -253,7 +267,7 @@ public class Board
     public boolean canMove(Checker checker, CheckersGame.Player turn)
     {
         int row = checker.getRow();
-        int col = checker.getCol();
+        int col = checker.getColumn();
         Cell topRight = null;
         Cell topLeft = null;
         Cell botRight = null;
@@ -297,7 +311,7 @@ public class Board
     public boolean canCapture(Checker checker, CheckersGame.Player turn)
     {
         int row = checker.getRow();
-        int col = checker.getCol();
+        int col = checker.getColumn();
         Cell topRight = null;
         Cell topLeft = null;
         Cell botRight = null;
@@ -367,5 +381,5 @@ public class Board
         }
 
         return false;
-    }
+    }*/
 }

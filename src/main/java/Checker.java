@@ -24,9 +24,14 @@ public class Checker
         return currentRow;
     }
 
-    public int getCol()
+    public int getColumn()
     {
         return currentCol;
+    }
+
+    public Cell getCell()
+    {
+        return board.getCellAt(currentRow, currentCol);
     }
 
     public void setCaptured()

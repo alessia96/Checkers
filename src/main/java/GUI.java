@@ -1,23 +1,14 @@
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
-import jfxtras.labs.scene.control.window.SelectableNode;
 import jfxtras.labs.util.event.MouseControlUtil;
 
 import java.util.stream.IntStream;
@@ -31,10 +22,8 @@ public class GUI extends Application
     private GridPane gridPane;
     private BorderPane infoPane;
 
-    private Button sourceCell;
-    private Circle[][] grid;
-
-    private Circle source, target;
+    private Circle[][] checkers;
+    private Pane[][] tiles;
 
     @Override
     public void start(Stage primaryStage)
@@ -45,7 +34,6 @@ public class GUI extends Application
 
         generateGrid();
         generateInfoPane();
-        //beginGame();
 
         root.setLeft(gridPane);
         root.setRight(infoPane);
@@ -61,65 +49,70 @@ public class GUI extends Application
         primaryStage.show();
     }
 
-    private void beginGame()
+    private void updateUI(Move move)
     {
-        getMove();
+        int targetRow = move.getTarget().getRow();
+        int targetCol = move.getTarget().getColumn();
+        int sourceRow = move.getSource().getRow();
+        int sourceCol = move.getSource().getColumn();
+
+        // update source tile
+        tiles[sourceRow][sourceCol].getChildren().remove(checkers[sourceRow][sourceCol]);
+
+        // update target tile
+        updateTile(targetRow, targetCol);
+
+        tiles[targetRow][targetCol] = new Pane();
+        tiles[targetRow][targetCol].setMaxSize(70, 70);
+        tiles[targetRow][targetCol].getChildren().add(checkers[targetRow][targetCol]);
+
+        gridPane.add(tiles[targetRow][targetCol], targetCol, targetRow);
     }
 
-    private Move getMove()
+    private void getMove()
     {
         Move move = null;
         if (match.getTurn() == CheckersGame.Player.AI)
         {
-            move = match.getAIController().getAIMove();
+            //move = match.getAIController().getAIMove();
         }
         if (match.getTurn() == CheckersGame.Player.HUMAN)
         {
-            match.getUserController().getUserMove();
+            move = match.getUserController().getUserMove();
+
+            if (board.isMoveValid(move))
+            {
+                board.makeMove(move);
+            }
+
+            if (!board.isMoveValid(move))
+            {
+                Cell target = move.getSource().getCell();
+                move = new Move(move.getSource(), target);
+                System.out.println("not valid");
+            }
+
+            updateUI(move);
+            match.getUserController().setTiles(tiles);
         }
-        return move;
     }
 
     private void generateGrid()
     {
-        grid = new Circle[board.getGrid().length][board.getGrid().length];
+        checkers = new Circle[board.getGrid().length][board.getGrid().length];
+        tiles = new Pane[board.getGrid().length][board.getGrid().length];
 
         IntStream.range(0, 8).forEach((row) ->
                 IntStream.range(0, 8).forEach((col) ->
                 {
                     if (board.getCellAt(row, col).isBlack())
                     {
-                        Pane pane = new Pane();
-                        pane.setStyle("-fx-background-color: black");
+                        tiles[row][col] = new Pane();
+                        tiles[row][col].setStyle("-fx-background-color: black");
 
-                        if (board.getCellAt(row, col).isOccupied())
-                        {
-                            grid[row][col] = new Circle(35, 35, 30);
-                            if (!board.getCellAt(row, col).getChecker().isBlack())
-                            {
-                                grid[row][col].setFill(Color.WHITE);
-                            }
-                            grid[row][col].setStroke(Color.WHITE);
+                        updateTile(row, col);
 
-                            MouseControlUtil.makeDraggable(grid[row][col]);
-
-                            grid[row][col].addEventHandler(MouseEvent.MOUSE_PRESSED, event ->
-                                System.out.println("pressed"));
-
-                            grid[row][col].addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->
-                                System.out.println("dragged"));
-
-                            grid[row][col].addEventHandler(MouseEvent.MOUSE_RELEASED, event ->
-                            {
-                                System.out.println("released");
-                                Transform t = grid[row][col].getLocalToSceneTransform();
-                                System.out.println(t.getTx());
-                            });
-
-                            pane.setMaxSize(70, 70);
-                            pane.getChildren().add(grid[row][col]);
-                        }
-                        gridPane.add(pane, col, row);
+                        gridPane.add(tiles[row][col], col, row);
                     }
 
                     if (!board.getCellAt(row, col).isBlack())
@@ -130,15 +123,45 @@ public class GUI extends Application
                 })
         );
 
-        match.getUserController().setNodes(grid);
+        match.getUserController().setTiles(tiles);
+    }
+
+    private void updateTile(int row, int col)
+    {
+        if (board.getCellAt(row, col).isOccupied())
+        {
+            checkers[row][col] = new Circle(35, 35, 30);
+            if (!board.getCellAt(row, col).getChecker().isBlack())
+            {
+                checkers[row][col].setFill(Color.WHITE);
+            }
+            checkers[row][col].setStroke(Color.WHITE);
+
+            MouseControlUtil.makeDraggable(checkers[row][col]);
+
+            checkers[row][col].addEventHandler(MouseEvent.MOUSE_PRESSED, event ->
+                    match.getUserController().onCheckerPressed(row, col));
+
+            checkers[row][col].addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->
+                    match.getUserController().onCheckerDragged(row, col));
+
+            checkers[row][col].addEventHandler(MouseEvent.MOUSE_RELEASED, event ->
+            {
+                match.getUserController().onCheckerReleased(checkers[row][col]);
+                getMove();
+            });
+
+            tiles[row][col].setMaxSize(70, 70);
+            tiles[row][col].getChildren().add(checkers[row][col]);
+        }
     }
 
     public Circle[][] getGridButtons()
     {
-        return grid;
+        return checkers;
     }
 
-    public void setGridButton(int row, int col, String value)
+    public void setChecker(int row, int col, String value)
     {
         //grid[row][col].setText(value);
     }

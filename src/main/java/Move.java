@@ -1,14 +1,15 @@
 public class Move
 {
-    private Cell source, target;
+    private Checker source;
+    private Cell target;
 
-    public Move(Cell source, Cell target)
+    public Move(Checker source, Cell target)
     {
         this.source = source;
         this.target = target;
     }
 
-    public Cell getSource() { return source; }
+    public Checker getSource() { return source; }
 
     public Cell getTarget() { return target; }
 }

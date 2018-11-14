@@ -3,7 +3,7 @@ import java.util.List;
 
 public class AIController
 {
-    private Board board, tempBoard;
+    /*private Board board, tempBoard;
     private List<Move> availableMoves;
     private List<MovesAndScores> successorEvaluations;
     private int seCount, deCount, pCount;
@@ -146,9 +146,9 @@ public class AIController
                     {
                         target = tempBoard.getCellAt(row, col);
 
-                        testMove = new Move(source, target);
-                        if (tempBoard.isMoveValid(testMove))
-                            availableMoves.add(new Move(source, target));
+                        //testMove = new Move(source, target);
+                        //if (tempBoard.isMoveValid(testMove))
+                           // availableMoves.add(new Move(source, target));
                     }
                 }
             }
@@ -156,5 +156,5 @@ public class AIController
         }
 
         return availableMoves;
-    }
+    }*/
 }
