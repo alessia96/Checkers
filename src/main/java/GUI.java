@@ -1,8 +1,8 @@
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -24,6 +24,8 @@ public class GUI extends Application
 
     private Circle[][] checkers;
     private Pane[][] tiles;
+
+    private TextArea movesLog;
 
     @Override
     public void start(Stage primaryStage)
@@ -83,6 +85,9 @@ public class GUI extends Application
             if (board.isMoveValid(move))
             {
                 board.makeMove(move);
+                movesLog.setText("From [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
+                        "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
+                        "\n" + movesLog.getText());
             }
 
             if (!board.isMoveValid(move))
@@ -156,80 +161,45 @@ public class GUI extends Application
         }
     }
 
-    public Circle[][] getGridButtons()
-    {
-        return checkers;
-    }
-
-    public void setChecker(int row, int col, String value)
-    {
-        //grid[row][col].setText(value);
-    }
-
-    /*private void generateGrid()
-    {
-        IntStream.range(0, 8).forEach((row) ->
-                IntStream.range(0, 8).forEach((col) ->
-                        {
-                            if (board.getCellAt(row, col).isBlack())
-                            {
-                                Button btn = new Button(board.getCellAt(row, col).toString());
-                                if (board.getCellAt(row, col).isOccupied() && !board.getCellAt(row, col).getChecker().isBlack())
-                                {
-                                    btn.getStyleClass().add("whiteChecker");
-                                }
-
-                                if (match.getTurn() == CheckersGame.Player.HUMAN) {
-                                    btn.setOnAction((event) ->
-                                    {
-                                        System.out.println("BTn");
-                                        if (sourceCell != null)   // target cell
-                                        {
-                                            target = board.getCellAt(row, col);
-                                            Move move = new Move(source, target);
-
-                                            if (board.isMoveValid(move)) {
-                                                board.makeMove(move);
-                                            } else {
-                                                System.out.println("Move not valid");
-                                            }
-
-                                            if (!board.isCaptureAvailable()) {
-                                                sourceCell = null;
-                                            }
-                                        } else if (board.getCellAt(row, col).isOccupied()) // source cell
-                                        {
-                                            sourceCell = btn;
-                                            source = board.getCellAt(row, col);
-                                        }
-                                        //generateGrid();
-                                        generateInfoPane();
-                                        match.setTurn(CheckersGame.Player.AI);
-                                    });
-                                }
-                                btn.setPrefSize(30, 30);
-                                grid.add(btn, col, row);
-                            }
-                        }
-                )
-        );
-    }*/
-
     private void generateInfoPane()
     {
+        VBox topPane = new VBox();
+        topPane.setAlignment(Pos.CENTER);
+        topPane.setPadding(new Insets(10, 10, 0, 10));
         Button newGame = new Button("New Game");
-        TextArea movesLog = new TextArea("Moves Log:\n");
-        movesLog.setPrefSize(150, 200);
+        newGame.setOnAction(event ->
+        {
+            match = new CheckersGame();
+            board = match.getBoard();
+            generateGrid();
+            generateInfoPane();
+        });
+        CheckBox toggleHints = new CheckBox("Toggle Hints");
+        toggleHints.setOnAction(event ->
+        {
+            System.out.println("toggled");
+        });
+        topPane.getChildren().addAll(newGame, toggleHints, new Label(" "));
+
+        VBox movesLogPane = new VBox();
+        movesLogPane.setPadding(new Insets(0, 10, 0, 10));
+        Label movesLogLabel = new Label("Moves Log");
+        movesLog = new TextArea();
+        movesLog.setPrefSize(150, 400);
         movesLog.setEditable(false);
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(15, 10, 10, 10));
+        movesLogPane.getChildren().addAll(movesLogLabel, movesLog, separator);
+
+        VBox bottomPane = new VBox();
+        bottomPane.setPadding(new Insets(0, 10, 10, 10));
         Label blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckerCount(true)));
         Label whitesCaptures = new Label("Whites Captured: " + (12 - match.getBoard().getCheckerCount(false)));
-        GridPane bottom = new GridPane();
-        bottom.add(blacksCaptured, 0, 0);
-        bottom.add(new Label(" "), 1, 0);
-        bottom.add(whitesCaptures, 2, 0);
-        infoPane.setTop(newGame);
-        infoPane.setCenter(movesLog);
-        infoPane.setBottom(bottom);
+        bottomPane.getChildren().addAll(blacksCaptured, whitesCaptures);
+
+        infoPane.setTop(topPane);
+        infoPane.setCenter(movesLogPane);
+        infoPane.setBottom(bottomPane);
     }
 
     public static void main(String[] args)
