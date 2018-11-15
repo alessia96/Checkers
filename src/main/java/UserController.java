@@ -5,6 +5,7 @@ import javafx.scene.shape.Circle;
 
 public class UserController
 {
+    private CheckersGame match;
     private Board board;
     private Pane[][] tiles;
 
@@ -13,14 +14,16 @@ public class UserController
 
     private Move userMove;
 
-    public UserController(Board board)
+    public UserController(CheckersGame match)
     {
-        this.board = board;
+        this.match = match;
+        board = match.getBoard();
         tiles = new Pane[board.getGrid().length][board.getGrid().length];
     }
 
     public Move getUserMove()
     {
+        System.out.println("source row " + userMove.getSource().getRow() + " source col " + userMove.getSource().getColumn());
         return userMove;
     }
 
@@ -31,6 +34,7 @@ public class UserController
 
     public void onCheckerPressed(int row, int col)
     {
+        board = match.getBoard();
         source = board.getCellAt(row, col).getChecker();
         System.out.println("pressed at " + row + " " + col);
     }

@@ -6,8 +6,6 @@ public class Board
     private Cell[][] grid;
     private int whiteCheckers;
     private int blackCheckers;
-    private Checker source;
-    private Cell target;
 
     public Board()
     {
@@ -108,14 +106,26 @@ public class Board
 
     public void makeMove(Move move)
     {
-        move.getTarget().occupyCell(move.getSource());
-        getCellAt(move.getSource().getRow(), move.getSource().getColumn()).emptyCell();
+        int targetRow = move.getTarget().getRow();
+        int targetCol = move.getTarget().getColumn();
+        int sourceRow = move.getSource().getRow();
+        int sourceCol = move.getSource().getColumn();
+
+        if (move.getSource().isBlack())
+        {
+            grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, true, move.getTarget().getRow(), move.getTarget().getColumn()));
+        }
+        else
+        {
+            grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, false, move.getTarget().getRow(), move.getTarget().getColumn()));
+        }
+        grid[move.getSource().getRow()][move.getSource().getColumn()] = new Cell(null, move.getSource().getRow(), move.getSource().getColumn(), true);
         System.out.println("made move");
     }
 
     public boolean isMoveValid(Move move)
     {
-        if (isSourceSameAsTarget(move) || isTargetWhite(move))
+        if (isTargetWhite(move) || isSourceSameAsTarget(move))
         {
             return false;
         }
@@ -124,8 +134,21 @@ public class Board
 
     private boolean isSourceSameAsTarget(Move move)
     {
-        return (move.getSource().getCell().getRow() == move.getTarget().getRow() &&
-            move.getSource().getCell().getColumn() == move.getTarget().getColumn());
+        System.out.println("---------------------------------------");
+        System.out.println("source row " + move.getSource().getCell().getRow());
+        System.out.println("target row " + move.getTarget().getRow());
+        System.out.println("source col " + move.getSource().getCell().getColumn());
+        System.out.println("target col " + move.getTarget().getColumn());
+
+        if (move.getSource().getCell().getRow() == move.getTarget().getRow() &&
+            move.getSource().getCell().getColumn() == move.getTarget().getColumn())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private boolean isTargetWhite(Move move)

@@ -89,8 +89,7 @@ public class GUI extends Application
                         "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
                         "\n" + movesLog.getText());
             }
-
-            if (!board.isMoveValid(move))
+            else
             {
                 Cell target = move.getSource().getCell();
                 move = new Move(move.getSource(), target);

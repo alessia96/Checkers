@@ -9,7 +9,7 @@ public class CheckersGame
     public CheckersGame()
     {
         board = new Board();
-        userController = new UserController(board);
+        userController = new UserController(this);
         //aiController = new AIController(board);
         turn = Player.HUMAN;
     }

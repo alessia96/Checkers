@@ -41,6 +41,7 @@ public class Cell
 
     public void emptyCell()
     {
+        checkerOccupying = null;
         occupied = false;
     }
 
