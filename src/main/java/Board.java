@@ -6,6 +6,7 @@ public class Board
     private Cell[][] grid;
     private int whiteCheckers;
     private int blackCheckers;
+    private Cell idle;
 
     public Board()
     {
@@ -106,11 +107,6 @@ public class Board
 
     public void makeMove(Move move)
     {
-        int targetRow = move.getTarget().getRow();
-        int targetCol = move.getTarget().getColumn();
-        int sourceRow = move.getSource().getRow();
-        int sourceCol = move.getSource().getColumn();
-
         if (move.getSource().isBlack())
         {
             grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, true, move.getTarget().getRow(), move.getTarget().getColumn()));
@@ -119,13 +115,22 @@ public class Board
         {
             grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, false, move.getTarget().getRow(), move.getTarget().getColumn()));
         }
+
         grid[move.getSource().getRow()][move.getSource().getColumn()] = new Cell(null, move.getSource().getRow(), move.getSource().getColumn(), true);
+
+        if (isCheckerInBetween(move))
+        {
+            Checker checkerInBetween = idle.getChecker();
+            grid[checkerInBetween.getRow()][checkerInBetween.getColumn()] = new Cell(null, checkerInBetween.getRow(), checkerInBetween.getColumn(), true);
+        }
+
         System.out.println("made move");
     }
 
     public boolean isMoveValid(Move move)
     {
-        if (isTargetWhite(move) || isSourceSameAsTarget(move))
+        if (isTargetWhite(move) || isSourceSameAsTarget(move) || isMovingBackwards(move)
+            || isTargetOccupied(move) || !isValidJump(move))
         {
             return false;
         }
@@ -134,12 +139,6 @@ public class Board
 
     private boolean isSourceSameAsTarget(Move move)
     {
-        System.out.println("---------------------------------------");
-        System.out.println("source row " + move.getSource().getCell().getRow());
-        System.out.println("target row " + move.getTarget().getRow());
-        System.out.println("source col " + move.getSource().getCell().getColumn());
-        System.out.println("target col " + move.getTarget().getColumn());
-
         if (move.getSource().getCell().getRow() == move.getTarget().getRow() &&
             move.getSource().getCell().getColumn() == move.getTarget().getColumn())
         {
@@ -156,15 +155,15 @@ public class Board
         return !move.getTarget().isBlack();
     }
 
-    /*public boolean isMoveValid(Move move)
+    private boolean isMovingBackwards(Move move)
     {
-        source = move.getSource();
-        target = move.getTarget();
-
-        if ((source.getCell() == target) ||
-                !target.isBlack() ||
-                !isMovingForward() || target.isOccupied() ||
-                !isValidJump())
+        if (move.getSource().isBlack() &&
+                (move.getSource().getRow() < move.getTarget().getRow()))
+        {
+            return false;
+        }
+        else if (!move.getSource().isBlack() &&
+                (move.getSource().getRow() > move.getTarget().getRow()))
         {
             return false;
         }
@@ -172,15 +171,19 @@ public class Board
         return true;
     }
 
-    private boolean isMovingForward()
+    private boolean isTargetOccupied(Move move)
     {
-        if (source.isBlack() &&
-                (source.getRow() < target.getRow()))
+        if (move.getTarget().isOccupied())
         {
             return true;
         }
-        else if (!source.isBlack() &&
-                (source.getRow() > target.getRow()))
+        return false;
+    }
+
+    private boolean isValidJump(Move move)
+    {
+        if (((Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 2) && isCheckerInBetween(move)) ||
+                (Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 1))
         {
             return true;
         }
@@ -188,59 +191,58 @@ public class Board
         return false;
     }
 
-    private boolean isValidJump()
+    private boolean isCheckerInBetween(Move move)
     {
-        if (((Math.abs(source.getRow() - target.getRow()) == 2) && isCheckerInBetween()) ||
-                (Math.abs(source.getRow() - target.getRow()) == 1))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isCheckerInBetween()
-    {
-        boolean blackSource = source.isBlack();
-        boolean whiteSource = !source.isBlack();
-        boolean moveRight = source.getColumn() < target.getColumn();
-        boolean moveLeft = source.getColumn() > target.getColumn();
+        boolean blackSource = move.getSource().isBlack();
+        boolean whiteSource = !move.getSource().isBlack();
+        boolean moveRight = move.getSource().getColumn() < move.getTarget().getColumn();
+        boolean moveLeft = move.getSource().getColumn() > move.getTarget().getColumn();
         Cell botRight = null;
         Cell botLeft = null;
         Cell topRight = null;
         Cell topLeft = null;
 
-        if (source.getRow() + 1 < grid.length && source.getColumn() + 1 < grid.length)
-            botRight = getCellAt(source.getRow() + 1, source.getColumn() + 1);
+        if (move.getSource().getRow() + 1 < grid.length && move.getSource().getColumn() + 1 < grid.length)
+            botRight = getCellAt(move.getSource().getRow() + 1, move.getSource().getColumn() + 1);
 
-        if (source.getRow() + 1 < grid.length && source.getColumn() - 1 >= 0)
-            botLeft = getCellAt(source.getRow() + 1, source.getColumn() - 1);
+        if (move.getSource().getRow() + 1 < grid.length && move.getSource().getColumn() - 1 >= 0)
+            botLeft = getCellAt(move.getSource().getRow() + 1, move.getSource().getColumn() - 1);
 
-        if (source.getRow() - 1 >= 0 && source.getColumn() + 1 < grid.length)
-            topRight = getCellAt(source.getRow() - 1, source.getColumn() + 1);
+        if (move.getSource().getRow() - 1 >= 0 && move.getSource().getColumn() + 1 < grid.length)
+            topRight = getCellAt(move.getSource().getRow() - 1, move.getSource().getColumn() + 1);
 
-        if (source.getRow() - 1 >= 0 && source.getColumn() - 1 >= 0)
-            topLeft = getCellAt(source.getRow() - 1, source.getColumn() - 1);
+        if (move.getSource().getRow() - 1 >= 0 && move.getSource().getColumn() - 1 >= 0)
+            topLeft = getCellAt(move.getSource().getRow() - 1, move.getSource().getColumn() - 1);
 
         if (blackSource && moveRight && botRight.isOccupied() && !botRight.getChecker().isBlack())
         {
+            idle = botRight;
             return true;
         }
         else if (blackSource && moveLeft && botLeft.isOccupied() && !botLeft.getChecker().isBlack())
         {
+            idle = botLeft;
             return true;
         }
         else if (whiteSource && moveRight && topRight.isOccupied() && topRight.getChecker().isBlack())
         {
+            idle = topRight;
             return true;
         }
         else if (whiteSource && moveLeft && topLeft.isOccupied() && topLeft.getChecker().isBlack())
         {
+            idle = topLeft;
             return true;
         }
-
+        System.out.println("no checker in between");
         return false;
     }
+
+    public Cell getIdleCell()
+    {
+        return idle;
+    }
+    /*
 
     public boolean isCaptureAvailable()
     {

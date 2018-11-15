@@ -64,6 +64,18 @@ public class GUI extends Application
         // update target tile
         updateTile(targetRow, targetCol);
 
+        if (board.getIdleCell() != null)
+        {
+            Cell inBetween = board.getIdleCell();
+            System.out.println("row in between " + inBetween.getRow() + " col in between " + inBetween.getColumn());
+            updateTile(inBetween.getRow(), inBetween.getColumn());
+            tiles[inBetween.getRow()][inBetween.getColumn()] = new Pane();
+            tiles[inBetween.getRow()][inBetween.getColumn()].setMaxSize(70, 70);
+            tiles[inBetween.getRow()][inBetween.getColumn()].getChildren().add(checkers[inBetween.getRow()][inBetween.getColumn()]);
+
+            //gridPane.add(tiles[inBetween.getRow()][inBetween.getColumn()], inBetween.getColumn(), inBetween.getRow());
+        }
+
         tiles[targetRow][targetCol] = new Pane();
         tiles[targetRow][targetCol].setMaxSize(70, 70);
         tiles[targetRow][targetCol].getChildren().add(checkers[targetRow][targetCol]);
