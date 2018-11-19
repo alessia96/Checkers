@@ -1,7 +1,6 @@
 public class Checker
 {
     private boolean isBlack;
-    private boolean isCaptured;
     private int currentRow;
     private int currentCol;
     private Board board;
@@ -32,16 +31,5 @@ public class Checker
     public Cell getCell()
     {
         return board.getCellAt(currentRow, currentCol);
-    }
-
-    public void setCaptured()
-    {
-        isCaptured = true;
-        board.decreaseCheckerCount(isBlack);
-    }
-
-    public boolean isCaptured()
-    {
-        return isCaptured;
     }
 }

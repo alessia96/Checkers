@@ -3,27 +3,25 @@ import java.util.List;
 
 public class AIController
 {
-    /*private Board board, tempBoard;
+    private Board board;
     private List<Move> availableMoves;
-    private List<MovesAndScores> successorEvaluations;
-    private int seCount, deCount, pCount;
-    private boolean blackCaptureHappened, whiteCaptureHappened;
+    public List<MovesAndScores> successorEvaluations;
+    public int seCount, deCount, pCount;
+    private int maxDepth = 5;
 
     public AIController(Board board)
     {
         this.board = board;
-        tempBoard = board;
     }
 
-    public Move getAIMove()
+    public Move getAIMove(int difficulty)
     {
         successorEvaluations = new ArrayList<>();
+        maxDepth = difficulty;
         deCount = 0;
         seCount = 0;
         pCount = 0;
-        blackCaptureHappened = false;
-        whiteCaptureHappened = false;
-        minimax(0, CheckersGame.Player.AI);
+        minimax(0, CheckersGame.Player.AI, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
         int best = -1;
         int MAX = -100;
@@ -38,50 +36,52 @@ public class AIController
         return successorEvaluations.get(best).getMove();
     }
 
-    public int minimax(int depth, CheckersGame.Player player)
+    public int minimax(int depth, CheckersGame.Player player, int alpha, int beta)
     {
         int bestScore = 0;
 
-        if (blackCaptureHappened)
+        if (depth > maxDepth)
         {
             seCount++;
-            return 1;
-        }
-        else if (whiteCaptureHappened)
-        {
-            seCount++;
-            return -1;
+            return board.getCheckers(true).size() - board.getCheckers(false).size();
         }
 
-        List<Move> movesAvailable = getAvailableStates(player);
+        //System.out.println(depth);
+        List<Move> movesAvailable = board.getAvailableStates(player);
+        if (movesAvailable.isEmpty())
+        {
+            seCount++;
+            //System.out.println("empty moves");
+            return 0;
+        }
 
         for (int i = 0; i < movesAvailable.size(); i++)
         {
+            Board temp = null;
+
+            try
+            {
+                temp = (Board) board.clone();
+            }
+            catch (Exception e)
+            {
+                //
+            }
+
             Move move = movesAvailable.get(i);
+//            System.out.println(move.getSource().getRow() + " " + move.getSource().getColumn() +
+//                    " to " + move.getTarget().getRow() + " " + move.getTarget().getColumn());
             deCount++;
 
             if (player == CheckersGame.Player.AI) // MAX - white (AI)
             {
                 bestScore = Integer.MIN_VALUE;
 
-                int sizeBeforeMove = tempBoard.getCheckers(true).size();
-                if (tempBoard.isMoveValid(move))
-                {
-                    tempBoard.makeMove(move);
-                    int sizeAfterMove = tempBoard.getCheckers(true).size();
-                    if (sizeBeforeMove != sizeAfterMove) {
-                        blackCaptureHappened = true;
-                    } else {
-                        blackCaptureHappened = false; }
-                }
-                else
-                {
-                    continue;
-                }
+                board.makeMove(move, true);
 
-                int currentScore = minimax(depth + 1, CheckersGame.Player.HUMAN);
-                if (currentScore > bestScore)
-                    bestScore = currentScore;
+                int currentScore = minimax(depth + 1, CheckersGame.Player.HUMAN, alpha, beta);
+                bestScore = Math.max(bestScore, currentScore);
+                alpha = Math.max(currentScore, alpha);
 
                 if (depth == 0)
                     successorEvaluations.add(new MovesAndScores(move, currentScore));
@@ -90,71 +90,28 @@ public class AIController
             {
                 bestScore = Integer.MAX_VALUE;
 
-                int sizeBeforeMove = tempBoard.getCheckers(false).size();
-                if (tempBoard.isMoveValid(move))
-                {
-                    tempBoard.makeMove(move);
-                    int sizeAfterMove = tempBoard.getCheckers(false).size();
-                    if (sizeBeforeMove != sizeAfterMove) {
-                        whiteCaptureHappened = true;
-                    } else {
-                        whiteCaptureHappened = false; }
-                }
-                else
-                {
-                    continue;
-                }
+                board.makeMove(move, true);
 
-                int currentScore = minimax(depth + 1, CheckersGame.Player.AI);
-                if (currentScore < bestScore)
-                    bestScore = currentScore;
+                int currentScore = minimax(depth + 1, CheckersGame.Player.AI, alpha, beta);
+                bestScore = Math.min(bestScore, currentScore);
+                beta = Math.min(currentScore, beta);
             }
 
-            tempBoard = board;  // reset fake board
+            board = temp;
+
+            if(alpha >= beta)
+            {
+                pCount++;
+                //System.out.println("Pruning at level "+depth+" because "+alpha+">="+beta+").");
+                break;
+            }
         }
 
         return bestScore;
     }
 
-    private List<Move> getAvailableStates(CheckersGame.Player player)
+    public void updateBoard(Board board)
     {
-        availableMoves = new ArrayList<>();
-
-        List<Checker> allMovableCheckers = new ArrayList<>();
-        Move testMove = null;
-        Cell source = null;
-        Cell target = null;
-
-        if (player == CheckersGame.Player.AI)    // get white checkers - AI
-        {
-            allMovableCheckers = tempBoard.getMovableCheckers(player);
-        }
-        else if (player == CheckersGame.Player.HUMAN)     // get black checkers - player
-        {
-            allMovableCheckers = tempBoard.getMovableCheckers(player);
-        }
-
-        for (int i = 0; i < allMovableCheckers.size(); i++)
-        {
-            source = tempBoard.getCellAt(allMovableCheckers.get(i).getRow(), allMovableCheckers.get(i).getCol());
-
-            for (int row = 0; row < tempBoard.getGrid().length; row++)
-            {
-                for (int col = 0; col < tempBoard.getGrid().length; col++)
-                {
-                    if (!tempBoard.getCellAt(row, col).isOccupied())
-                    {
-                        target = tempBoard.getCellAt(row, col);
-
-                        //testMove = new Move(source, target);
-                        //if (tempBoard.isMoveValid(testMove))
-                           // availableMoves.add(new Move(source, target));
-                    }
-                }
-            }
-
-        }
-
-        return availableMoves;
-    }*/
+        this.board = board;
+    }
 }

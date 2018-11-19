@@ -1,12 +1,10 @@
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 
 public class UserController
 {
     private Board board;
-    private Pane[][] tiles;
 
     private Checker source;
     private Cell target;
@@ -16,29 +14,17 @@ public class UserController
     public UserController(Board board)
     {
         this.board = board;
-        tiles = new Pane[board.getGrid().length][board.getGrid().length];
     }
 
     public Move getUserMove()
     {
-        System.out.println("source row " + userMove.getSource().getRow() + " source col " + userMove.getSource().getColumn());
         return userMove;
-    }
-
-    public void setTiles(Pane[][] tiles)
-    {
-        this.tiles = tiles;
     }
 
     public void onCheckerPressed(int row, int col)
     {
         source = board.getCellAt(row, col).getChecker();
-        System.out.println("pressed at " + row + " " + col);
-    }
-
-    public void onCheckerDragged(int row, int col)
-    {
-
+        System.out.println("on checker pressed " + source.isBlack());
     }
 
     public void onCheckerReleased(Circle checker)
@@ -56,8 +42,6 @@ public class UserController
     {
         int xIndex = (int) Math.floor(worldX / 70);
         int yIndex = (int) Math.floor(worldY / 70);
-
-        System.out.println("landed at " + xIndex + " " + yIndex);
 
         return board.getCellAt(xIndex, yIndex);
     }

@@ -3,14 +3,23 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import jfxtras.labs.util.event.MouseControlUtil;
 
+import javax.swing.*;
+import java.awt.*;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class GUI extends Application
@@ -26,6 +35,10 @@ public class GUI extends Application
     private Pane[][] tiles;
 
     private TextArea movesLog;
+
+    private int selectedDifficulty = 0;
+    private boolean hintsToggled;
+    private boolean shownOnce;
 
     @Override
     public void start(Stage primaryStage)
@@ -67,7 +80,6 @@ public class GUI extends Application
         if (board.getIdleCell() != null)
         {
             Cell inBetween = board.getIdleCell();
-            System.out.println("row in between " + inBetween.getRow() + " col in between " + inBetween.getColumn());
             updateTile(inBetween.getRow(), inBetween.getColumn());
             tiles[inBetween.getRow()][inBetween.getColumn()] = new Pane();
             tiles[inBetween.getRow()][inBetween.getColumn()].setMaxSize(70, 70);
@@ -77,6 +89,10 @@ public class GUI extends Application
         }
 
         tiles[targetRow][targetCol] = new Pane();
+
+        tiles[targetRow][targetCol].addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
+                System.out.println(board.getCellAt(targetRow, targetCol).isOccupied()));
+
         tiles[targetRow][targetCol].setMaxSize(70, 70);
         tiles[targetRow][targetCol].getChildren().add(checkers[targetRow][targetCol]);
 
@@ -86,30 +102,54 @@ public class GUI extends Application
     private void getMove()
     {
         Move move = null;
+        boolean getNewMove = false;
+
         if (match.getTurn() == CheckersGame.Player.AI)
         {
-            //move = match.getAIController().getAIMove();
+            match.getAIController().updateBoard(board);
+            move = match.getAIController().getAIMove(selectedDifficulty);
+
+            System.out.println("seCount " + match.getAIController().seCount + ", deCount " + match.getAIController().deCount +
+                    ", pCount " + match.getAIController().pCount);
+            for (MovesAndScores mas : match.getAIController().successorEvaluations)
+            {
+                System.out.println("Move: " + mas.getMove().getSource().getRow() + " "
+                        + mas.getMove().getSource().getColumn() + " to " + mas.getMove().getTarget().getRow() + " " +
+                        mas.getMove().getTarget().getColumn() + ", scores " + mas.getScore());
+            }
+
+            movesLog.setText("White moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
+                    "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
+                    "\n" + movesLog.getText());
+            board.makeMove(move, false);
+            updateUI(move);
         }
-        if (match.getTurn() == CheckersGame.Player.HUMAN)
+        else if (match.getTurn() == CheckersGame.Player.HUMAN)
         {
+            //System.out.println(board.getCellAt(5, 0).isOccupied());
             move = match.getUserController().getUserMove();
 
             if (board.isMoveValid(move))
             {
-                board.makeMove(move);
-                movesLog.setText("From [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
-                        "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
-                        "\n" + movesLog.getText());
+                board.makeMove(move, false);
+                movesLog.setText("Black moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
+                    "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]\n" + movesLog.getText());
+                getNewMove = true;
             }
             else
             {
+                movesLog.setText("Move not valid.\n" + movesLog.getText());
                 Cell target = move.getSource().getCell();
                 move = new Move(move.getSource(), target);
-                System.out.println("not valid");
             }
 
             updateUI(move);
-            match.getUserController().setTiles(tiles);
+
+            if (getNewMove)
+            {
+                getNewMove = false;
+                getMove();
+            }
         }
     }
 
@@ -119,27 +159,28 @@ public class GUI extends Application
         tiles = new Pane[board.getGrid().length][board.getGrid().length];
 
         IntStream.range(0, 8).forEach((row) ->
-                IntStream.range(0, 8).forEach((col) ->
+            IntStream.range(0, 8).forEach((col) ->
+            {
+                if (board.getCellAt(row, col).isBlack())
                 {
-                    if (board.getCellAt(row, col).isBlack())
-                    {
-                        tiles[row][col] = new Pane();
-                        tiles[row][col].setStyle("-fx-background-color: black");
+                    tiles[row][col] = new Pane();
+                    tiles[row][col].setStyle("-fx-background-color: black");
 
-                        updateTile(row, col);
+                    updateTile(row, col);
 
-                        gridPane.add(tiles[row][col], col, row);
-                    }
+                    tiles[row][col].addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
+                            System.out.println(board.getCellAt(row, col).isOccupied()));
 
-                    if (!board.getCellAt(row, col).isBlack())
-                    {
-                        Box box = new Box(70, 70, 0);
-                        gridPane.add(box, col, row);
-                    }
-                })
+                    gridPane.add(tiles[row][col], col, row);
+                }
+
+                if (!board.getCellAt(row, col).isBlack())
+                {
+                    Box box = new Box(70, 70, 0);
+                    gridPane.add(box, col, row);
+                }
+            })
         );
-
-        match.getUserController().setTiles(tiles);
     }
 
     private void updateTile(int row, int col)
@@ -151,32 +192,59 @@ public class GUI extends Application
             {
                 checkers[row][col].setFill(Color.WHITE);
             }
-            checkers[row][col].setStroke(Color.WHITE);
-
-            MouseControlUtil.makeDraggable(checkers[row][col]);
-
-            checkers[row][col].addEventHandler(MouseEvent.MOUSE_PRESSED, event ->
-                    match.getUserController().onCheckerPressed(row, col));
-
-            checkers[row][col].addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->
-                    match.getUserController().onCheckerDragged(row, col));
-
-            checkers[row][col].addEventHandler(MouseEvent.MOUSE_RELEASED, event ->
+            else
             {
-                match.getUserController().onCheckerReleased(checkers[row][col]);
-                getMove();
-            });
+                MouseControlUtil.makeDraggable(checkers[row][col]);
+
+                checkers[row][col].addEventHandler(MouseEvent.MOUSE_PRESSED, event ->
+                        match.getUserController().onCheckerPressed(row, col));
+
+                checkers[row][col].addEventHandler(MouseEvent.MOUSE_RELEASED, event ->
+                {
+                    match.getUserController().onCheckerReleased(checkers[row][col]);
+                    getMove();
+                });
+            }
+            checkers[row][col].setStroke(Color.WHITE);
 
             tiles[row][col].setMaxSize(70, 70);
             tiles[row][col].getChildren().add(checkers[row][col]);
         }
+
+        if (hintsToggled)
+            showHints();
     }
 
     private void generateInfoPane()
     {
-        VBox topPane = new VBox();
-        topPane.setAlignment(Pos.CENTER);
-        topPane.setPadding(new Insets(10, 10, 0, 10));
+        GridPane topPane = topInfoPane();
+
+        VBox movesLogPane = new VBox();
+        movesLogPane.setPadding(new Insets(0, 10, 0, 10));
+        Label movesLogLabel = new Label("Moves Log");
+        movesLog = new TextArea();
+        movesLog.setPrefSize(200, 330);
+        movesLog.setEditable(false);
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(15, 10, 10, 10));
+        movesLogPane.getChildren().addAll(movesLogLabel, movesLog, separator);
+
+        VBox bottomPane = new VBox();
+        bottomPane.setPadding(new Insets(0, 10, 10, 10));
+        Label blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckers(true).size()));
+        Label whitesCaptures = new Label("Whites Captured: " + (12 - match.getBoard().getCheckers(false).size()));
+        bottomPane.getChildren().addAll(blacksCaptured, whitesCaptures);
+
+        infoPane.setTop(topPane);
+        infoPane.setCenter(movesLogPane);
+        infoPane.setBottom(bottomPane);
+    }
+
+    private GridPane topInfoPane()
+    {
+        GridPane pane = new GridPane();
+        pane.setAlignment(Pos.CENTER);
+        pane.setPadding(new Insets(10, 10, 10, 10));
         Button newGame = new Button("New Game");
         newGame.setOnAction(event ->
         {
@@ -185,32 +253,73 @@ public class GUI extends Application
             generateGrid();
             generateInfoPane();
         });
+        Button readRules = new Button("Read Rules");
+        readRules.setOnAction(event ->
+        {
+            try
+            {
+                Desktop.getDesktop().browse(new URI("http://www.indepthinfo.com/checkers/play.shtml"));
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        });
         CheckBox toggleHints = new CheckBox("Toggle Hints");
+        toggleHints.setPadding(new Insets(10, 10, 10, 10));
         toggleHints.setOnAction(event ->
         {
-            System.out.println("toggled");
+            hintsToggled = !hintsToggled;
+            showHints();
         });
-        topPane.getChildren().addAll(newGame, toggleHints, new Label(" "));
+        HBox sliderBox = new HBox();
+        Label difficultyLabel = new Label("Difficulty:\n0");
+        difficultyLabel.setTextAlignment(TextAlignment.CENTER);
+        Slider difficultySlider = new Slider();
+        difficultySlider.setOnMouseDragged(event ->
+        {
+            selectedDifficulty = (int) difficultySlider.getValue();
+            difficultyLabel.setText("Difficulty:\n" + (int) difficultySlider.getValue());
+            if (selectedDifficulty == 6 && !shownOnce)
+            {
+                shownOnce = true;
+                Alert alert = new Alert(Alert.AlertType.WARNING, "The higher the difficulty, the more time is required to process AI moves!", ButtonType.OK);
+                alert.setTitle("Warning!");
+                alert.setHeaderText("Warning!");
+                alert.showAndWait();
+            }
+        });
+        difficultySlider.setPadding(new Insets(10, 10, 10, 10));
+        difficultySlider.setMaxWidth(100);
+        difficultySlider.setMin(0);
+        difficultySlider.setMax(10);
+        sliderBox.getChildren().addAll(difficultySlider, difficultyLabel);
+        pane.add(newGame, 0, 0);
+        pane.add(readRules, 0, 1);
+        pane.add(toggleHints, 1, 0);
+        pane.add(sliderBox, 1, 1);
 
-        VBox movesLogPane = new VBox();
-        movesLogPane.setPadding(new Insets(0, 10, 0, 10));
-        Label movesLogLabel = new Label("Moves Log");
-        movesLog = new TextArea();
-        movesLog.setPrefSize(150, 400);
-        movesLog.setEditable(false);
-        Separator separator = new Separator();
-        separator.setPadding(new Insets(15, 10, 10, 10));
-        movesLogPane.getChildren().addAll(movesLogLabel, movesLog, separator);
+        return pane;
+    }
 
-        VBox bottomPane = new VBox();
-        bottomPane.setPadding(new Insets(0, 10, 10, 10));
-        Label blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckerCount(true)));
-        Label whitesCaptures = new Label("Whites Captured: " + (12 - match.getBoard().getCheckerCount(false)));
-        bottomPane.getChildren().addAll(blacksCaptured, whitesCaptures);
+    private void showHints()
+    {
+        List<Checker> movableUserCheckers = board.getMovableCheckers(CheckersGame.Player.HUMAN);
 
-        infoPane.setTop(topPane);
-        infoPane.setCenter(movesLogPane);
-        infoPane.setBottom(bottomPane);
+        for (int i = 0; i < movableUserCheckers.size(); i++)
+        {
+            int row = movableUserCheckers.get(i).getRow();
+            int col = movableUserCheckers.get(i).getColumn();
+
+            if (hintsToggled)
+            {
+                checkers[row][col].setStroke(Color.RED);
+            }
+            else
+            {
+                checkers[row][col].setStroke(Color.WHITE);
+            }
+        }
     }
 
     public static void main(String[] args)
