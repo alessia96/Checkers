@@ -6,8 +6,8 @@ public class Board
 {
     private CheckersGame match;
     private Cell[][] grid;
-    private Cell idle;
     private Checker checkerInBetween;
+    private List<Checker> checkerThatCanCapture;
 
     public Board(CheckersGame match)
     {
@@ -15,19 +15,21 @@ public class Board
         grid = new Cell[8][8];
         fillWithCells();
         fillWithCheckers();
+        checkerThatCanCapture = new ArrayList<>();
     }
 
-    public Board(Board thisBoard, CheckersGame match)
+   public Board(Board thisBoard)
     {
-        this.match = match;
+        this.match = thisBoard.match;
         grid = new Cell[8][8];
         fillWithCells();
         fillWithCheckers();
+        checkerThatCanCapture = new ArrayList<>();
     }
 
     public Object clone() throws CloneNotSupportedException
     {
-        return new Board(this, match);
+        return new Board(this);
     }
 
     private void fillWithCells()
@@ -128,19 +130,20 @@ public class Board
         }
 
         grid[move.getSource().getRow()][move.getSource().getColumn()].emptyCell();
-        grid[move.getSource().getRow()][move.getSource().getColumn()] = new Cell(null, move.getSource().getRow(), move.getSource().getColumn(), true);
+        //grid[move.getSource().getRow()][move.getSource().getColumn()] = new Cell(null, move.getSource().getRow(), move.getSource().getColumn(), true);
         //System.out.println(grid[move.getSource().getRow()][move.getSource().getColumn()].isOccupied());
 
-        if (isCheckerInBetween(move))
+        if (checkerInBetween != null)
         {
-            checkerInBetween = idle.getChecker();
             //System.out.println("captured ------------------------------------------------");
-            grid[checkerInBetween.getRow()][checkerInBetween.getColumn()].emptyCell();
-            grid[checkerInBetween.getRow()][checkerInBetween.getColumn()] = new Cell(null, checkerInBetween.getRow(), checkerInBetween.getColumn(), true);
+            checkerInBetween.getCell().emptyCell();
+            //grid[checkerInBetween.getRow()][checkerInBetween.getColumn()] = new Cell(null, checkerInBetween.getRow(), checkerInBetween.getColumn(), true);
         }
 
         if (!isTest)
         {
+            System.out.println("making move " + move.getSource().getRow() +  " " + move.getSource().getColumn() + " to " +
+                    move.getTarget().getRow() + " " + move.getTarget().getColumn());
             if (match.getTurn() == CheckersGame.Player.AI)
             {
                 match.setTurn(CheckersGame.Player.HUMAN);
@@ -212,31 +215,30 @@ public class Board
 
     public boolean isValidJump(Move move)
     {
-        System.out.println("check if valid jump for " + move.getSource().getRow() + " " + move.getSource().getColumn() + " to "
-            + move.getTarget().getRow() + " " + move.getTarget().getColumn());
-        System.out.println("source " + move.getSource().getRow() + " " + move.getSource().getColumn());
-        System.out.println("is target " + move.getTarget().getRow() + " " + move.getTarget().getColumn() + " occupied: " + move.getTarget().isOccupied());
+//        System.out.println("check if valid jump for " + move.getSource().getRow() + " " + move.getSource().getColumn() + " to "
+//            + move.getTarget().getRow() + " " + move.getTarget().getColumn());
+//        System.out.println("source " + move.getSource().getRow() + " " + move.getSource().getColumn());
+//        System.out.println("is target " + move.getTarget().getRow() + " " + move.getTarget().getColumn() + " occupied: " + move.getTarget().isOccupied());
 
         if (((Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 2) &&
                 Math.abs(move.getSource().getColumn() - move.getTarget().getColumn()) == 2) && isCheckerInBetween(move))
         {
-            System.out.println("jump valid: checker is in between");
+            //System.out.println("jump valid: checker is in between");
             return true;
         }
         else if (Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 1
             && Math.abs(move.getSource().getColumn() - move.getTarget().getColumn()) == 1 && !move.getTarget().isOccupied())
         {
-            System.out.println("jump valid: moved of 1");
+            //System.out.println("jump valid: moved of 1");
             return true;
         }
 
-        System.out.println("jump not valid");
+        //System.out.println("jump not valid");
         return false;
     }
 
     public boolean isCheckerInBetween(Move move)
     {
-        idle = null;
         boolean blackSource = move.getSource().isBlack();
         boolean whiteSource = !move.getSource().isBlack();
         boolean moveRight = move.getSource().getColumn() < move.getTarget().getColumn();
@@ -260,35 +262,32 @@ public class Board
 
         if (blackSource && moveRight && botRight.isOccupied() && !botRight.getChecker().isBlack())
         {
-            idle = botRight;
+            checkerInBetween = botRight.getChecker();
             return true;
         }
         else if (blackSource && moveLeft && botLeft.isOccupied() && !botLeft.getChecker().isBlack())
         {
-            idle = botLeft;
+            checkerInBetween = botLeft.getChecker();
             return true;
         }
         else if (whiteSource && moveRight && topRight.isOccupied() && topRight.getChecker().isBlack())
         {
-            idle = topRight;
+            checkerInBetween = topRight.getChecker();
             return true;
         }
         else if (whiteSource && moveLeft && topLeft.isOccupied() && topLeft.getChecker().isBlack())
         {
-            idle = topLeft;
+            checkerInBetween = topLeft.getChecker();
             return true;
         }
         return false;
     }
 
-    public Cell getIdleCell()
-    {
-        return idle;
-    }
-
     public List<Checker> getMovableCheckers(CheckersGame.Player turn)
     {
         List<Checker> movableCheckers = new ArrayList<>();
+        checkerThatCanCapture.clear();
+
         if (turn == CheckersGame.Player.HUMAN)
         {
             for (int row = 0; row < grid.length; row++)
@@ -297,10 +296,14 @@ public class Board
                 {
                     if (grid[row][col].isOccupied() && grid[row][col].getChecker().isBlack())
                     {
-                        if (canMove(grid[row][col].getChecker(), turn) || canCapture(grid[row][col], turn))
+                        if (canMove(grid[row][col].getChecker(), turn))
+                        {
+                            movableCheckers.add(grid[row][col].getChecker());
+                        }
+                        if (canCapture(grid[row][col], turn))
                         {
                             //System.out.println("black added " + row + " " + col);
-                            movableCheckers.add(grid[row][col].getChecker());
+                            checkerThatCanCapture.add(grid[row][col].getChecker());
                         }
                     }
                 }
@@ -314,16 +317,22 @@ public class Board
                 {
                     if (grid[row][col].isOccupied() && !grid[row][col].getChecker().isBlack())
                     {
-                        if (canMove(grid[row][col].getChecker(), turn) || canCapture(grid[row][col], turn))
+                        if (canMove(grid[row][col].getChecker(), turn))
                         {
-                            //System.out.println("white added " + row + " " + col);
                             movableCheckers.add(grid[row][col].getChecker());
+                        }
+                        if (canCapture(grid[row][col], turn))
+                        {
+                            //System.out.println("black added " + row + " " + col);
+                            checkerThatCanCapture.add(grid[row][col].getChecker());
                         }
                     }
                 }
             }
         }
-        return movableCheckers;
+
+        if (!checkerThatCanCapture.isEmpty()) return checkerThatCanCapture;
+        else return movableCheckers;
     }
 
     public boolean canMove(Checker checker, CheckersGame.Player turn)
@@ -440,7 +449,7 @@ public class Board
             }
         }
 
-        System.out.println("canNOT capture");
+        //System.out.println("canNOT capture");
         return false;
     }
 

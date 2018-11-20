@@ -6,23 +6,18 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.effect.Reflection;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import jfxtras.labs.util.event.MouseControlUtil;
 
-import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class GUI extends Application
@@ -42,6 +37,7 @@ public class GUI extends Application
     private int selectedDifficulty = 0;
     private boolean hintsToggled;
     private boolean shownOnce;
+    private Label blacksCaptured, whitesCaptured;
 
     @Override
     public void start(Stage primaryStage)
@@ -67,7 +63,7 @@ public class GUI extends Application
         primaryStage.show();
     }
 
-    private void updateUI(Move move)
+    /*private void updateUI(Move move)
     {
         int targetRow = move.getTarget().getRow();
         int targetCol = move.getTarget().getColumn();
@@ -78,12 +74,12 @@ public class GUI extends Application
         tiles[sourceRow][sourceCol].getChildren().remove(checkers[sourceRow][sourceCol]);
 
         // update target tile
-        updateTile(targetRow, targetCol);
+        //updateTile(targetRow, targetCol);
 
         if (board.getCheckerInBetween() != null)
         {
             Cell inBetween = board.getCheckerInBetween().getCell();
-            updateTile(inBetween.getRow(), inBetween.getColumn());
+            //updateTile(inBetween.getRow(), inBetween.getColumn());
             tiles[inBetween.getRow()][inBetween.getColumn()] = new Pane();
             tiles[inBetween.getRow()][inBetween.getColumn()].setMaxSize(70, 70);
             tiles[inBetween.getRow()][inBetween.getColumn()].getChildren().add(checkers[inBetween.getRow()][inBetween.getColumn()]);
@@ -101,7 +97,7 @@ public class GUI extends Application
         tiles[targetRow][targetCol].getChildren().add(checkers[targetRow][targetCol]);
 
         gridPane.add(tiles[targetRow][targetCol], targetCol, targetRow);
-    }
+    }*/
 
     private void getMove()
     {
@@ -126,7 +122,7 @@ public class GUI extends Application
                     "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
                     "\n" + movesLog.getText());
             board.makeMove(move, false);
-            updateUI(move);
+            generateGrid();
         }
         else if (match.getTurn() == CheckersGame.Player.HUMAN)
         {
@@ -162,12 +158,9 @@ public class GUI extends Application
                 {
                     movesLog.setText("Move not valid: you can only capture the opponent's checker.\n" + movesLog.getText());
                 }
-
-                Cell target = move.getSource().getCell();
-                move = new Move(move.getSource(), target);
             }
 
-            updateUI(move);
+            generateGrid();
 
             if (getNewMove)
             {
@@ -179,8 +172,8 @@ public class GUI extends Application
 
     private void generateGrid()
     {
-        checkers = new Circle[board.getGrid().length][board.getGrid().length];
-        tiles = new Pane[board.getGrid().length][board.getGrid().length];
+        if (checkers == null) checkers = new Circle[board.getGrid().length][board.getGrid().length];
+        if (tiles == null) tiles = new Pane[board.getGrid().length][board.getGrid().length];
 
         IntStream.range(0, 8).forEach((row) ->
             IntStream.range(0, 8).forEach((col) ->
@@ -190,7 +183,34 @@ public class GUI extends Application
                     tiles[row][col] = new Pane();
                     tiles[row][col].setStyle("-fx-background-color: black");
 
-                    updateTile(row, col);
+                    if (board.getCellAt(row, col).isOccupied())
+                    {
+                        checkers[row][col] = new Circle(35, 35, 30);
+                        if (!board.getCellAt(row, col).getChecker().isBlack())
+                        {
+                            checkers[row][col].setFill(Color.WHITE);
+                        }
+                        else
+                        {
+                            MouseControlUtil.makeDraggable(checkers[row][col]);
+
+                            checkers[row][col].addEventHandler(MouseEvent.MOUSE_PRESSED, event ->
+                                    match.getUserController().onCheckerPressed(row, col));
+
+                            checkers[row][col].addEventHandler(MouseEvent.MOUSE_RELEASED, event ->
+                            {
+                                match.getUserController().onCheckerReleased(checkers[row][col]);
+                                getMove();
+                            });
+                        }
+                        checkers[row][col].setStroke(Color.WHITE);
+
+                        tiles[row][col].setMaxSize(70, 70);
+                        tiles[row][col].getChildren().add(checkers[row][col]);
+
+                        if (hintsToggled)
+                            showHints();
+                    }
 
                     tiles[row][col].addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
                             System.out.println(board.getCellAt(row, col).isOccupied()));
@@ -205,9 +225,11 @@ public class GUI extends Application
                 }
             })
         );
+
+        generateInfoPane();
     }
 
-    private void updateTile(int row, int col)
+    /*private void updateTile(int row, int col)
     {
         if (board.getCellAt(row, col).isOccupied())
         {
@@ -238,7 +260,7 @@ public class GUI extends Application
                 showHints();
         }
 
-    }
+    }*/
 
     private void generateInfoPane()
     {
@@ -247,7 +269,7 @@ public class GUI extends Application
         VBox movesLogPane = new VBox();
         movesLogPane.setPadding(new Insets(0, 10, 0, 10));
         Label movesLogLabel = new Label("Moves Log");
-        movesLog = new TextArea();
+        if (movesLog == null) movesLog = new TextArea();
         movesLog.setWrapText(true);
         movesLog.setPrefSize(200, 380);
         movesLog.setEditable(false);
@@ -257,8 +279,8 @@ public class GUI extends Application
 
         VBox bottomPane = new VBox();
         bottomPane.setPadding(new Insets(0, 10, 10, 10));
-        Label blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckers(true).size()));
-        Label whitesCaptured = new Label("Whites Captured: " + (12 - match.getBoard().getCheckers(false).size()));
+        blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckers(true).size()));
+        whitesCaptured = new Label("Whites Captured: " + (12 - match.getBoard().getCheckers(false).size()));
         bottomPane.getChildren().addAll(blacksCaptured, whitesCaptured);
 
         infoPane.setTop(topPane);
@@ -276,6 +298,7 @@ public class GUI extends Application
         {
             match = new CheckersGame();
             board = match.getBoard();
+            movesLog.clear();
             generateGrid();
             generateInfoPane();
         });
@@ -303,7 +326,7 @@ public class GUI extends Application
             showHints();
         });
         HBox sliderBox = new HBox();
-        Label difficultyLabel = new Label("Difficulty:\n0");
+        Label difficultyLabel = new Label("Difficulty:\n" + selectedDifficulty);
         difficultyLabel.setTextAlignment(TextAlignment.CENTER);
         Slider difficultySlider = new Slider();
         difficultySlider.setOnMouseDragged(event ->

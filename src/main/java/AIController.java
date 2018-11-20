@@ -16,24 +16,38 @@ public class AIController
 
     public Move getAIMove(int difficulty)
     {
-        successorEvaluations = new ArrayList<>();
-        maxDepth = difficulty;
-        deCount = 0;
-        seCount = 0;
-        pCount = 0;
-        minimax(0, CheckersGame.Player.AI, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        // temporarily changing it to 1
+        difficulty = 1;
 
-        int best = -1;
-        int MAX = -100;
-        for (int i = 0; i < successorEvaluations.size(); i++)
+        if (difficulty == 0)
         {
-            if (MAX < successorEvaluations.get(i).getScore())
-            {
-                MAX = successorEvaluations.get(i).getScore();
-                best = i;
-            }
+            // call random
         }
-        return successorEvaluations.get(best).getMove();
+        else
+        {
+            successorEvaluations = new ArrayList<>();
+            board.setCheckerInBetween(false);
+            maxDepth = difficulty;
+            deCount = 0;
+            seCount = 0;
+            pCount = 0;
+            minimax(0, CheckersGame.Player.AI, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+            int best = -1;
+            int MAX = -100;
+            for (int i = 0; i < successorEvaluations.size(); i++)
+            {
+                if (MAX < successorEvaluations.get(i).getScore())
+                {
+                    MAX = successorEvaluations.get(i).getScore();
+                    best = i;
+                }
+            }
+
+            return successorEvaluations.get(best).getMove();
+        }
+
+        return null;
     }
 
     public int minimax(int depth, CheckersGame.Player player, int alpha, int beta)
@@ -51,22 +65,21 @@ public class AIController
         if (movesAvailable.isEmpty())
         {
             seCount++;
-            //System.out.println("empty moves");
             return 0;
         }
 
         for (int i = 0; i < movesAvailable.size(); i++)
         {
-            Board temp = null;
-
-            try
-            {
-                temp = (Board) board.clone();
-            }
-            catch (Exception e)
-            {
-                //
-            }
+//            Board temp = null;
+//
+//            try
+//            {
+//                temp = (Board) board.clone();
+//            }
+//            catch (Exception e)
+//            {
+//                System.out.println("exception");
+//            }
 
             Move move = movesAvailable.get(i);
 //            System.out.println(move.getSource().getRow() + " " + move.getSource().getColumn() +
@@ -97,7 +110,23 @@ public class AIController
                 beta = Math.min(currentScore, beta);
             }
 
-            board = temp;
+            int sourceRow = move.getSource().getRow();
+            int sourceCol = move.getSource().getColumn();
+            int targetRow = move.getTarget().getRow();
+            int targetCol = move.getTarget().getColumn();
+
+            board.getCellAt(sourceRow, sourceCol).occupyCell(move.getSource());
+            board.getCellAt(targetRow, targetCol).emptyCell();
+            board.setCheckerInBetween(false);
+
+//            try
+//            {
+//                board = (Board) temp.clone();
+//            }
+//            catch (Exception e)
+//            {
+//                System.out.println("exception");
+//            }
 
             if(alpha >= beta)
             {
