@@ -6,12 +6,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.Reflection;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import jfxtras.labs.util.event.MouseControlUtil;
 
@@ -77,21 +80,22 @@ public class GUI extends Application
         // update target tile
         updateTile(targetRow, targetCol);
 
-        if (board.getIdleCell() != null)
+        if (board.getCheckerInBetween() != null)
         {
-            Cell inBetween = board.getIdleCell();
+            Cell inBetween = board.getCheckerInBetween().getCell();
             updateTile(inBetween.getRow(), inBetween.getColumn());
             tiles[inBetween.getRow()][inBetween.getColumn()] = new Pane();
             tiles[inBetween.getRow()][inBetween.getColumn()].setMaxSize(70, 70);
             tiles[inBetween.getRow()][inBetween.getColumn()].getChildren().add(checkers[inBetween.getRow()][inBetween.getColumn()]);
 
+            board.setCheckerInBetween(false);
             //gridPane.add(tiles[inBetween.getRow()][inBetween.getColumn()], inBetween.getColumn(), inBetween.getRow());
         }
 
         tiles[targetRow][targetCol] = new Pane();
 
         tiles[targetRow][targetCol].addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
-                System.out.println(board.getCellAt(targetRow, targetCol).isOccupied()));
+            System.out.println(board.getCellAt(targetRow, targetCol).isOccupied()));
 
         tiles[targetRow][targetCol].setMaxSize(70, 70);
         tiles[targetRow][targetCol].getChildren().add(checkers[targetRow][targetCol]);
@@ -138,7 +142,27 @@ public class GUI extends Application
             }
             else
             {
-                movesLog.setText("Move not valid.\n" + movesLog.getText());
+                if (board.isSourceSameAsTarget(move))
+                {
+                    movesLog.setText("Move not valid: target tile cannot be source tile.\n" + movesLog.getText());
+                }
+                else if (board.isTargetWhite(move))
+                {
+                    movesLog.setText("Move not valid: target tile cannot be a white tile.\n" + movesLog.getText());
+                }
+                else if (board.isMovingBackwards(move))
+                {
+                    movesLog.setText("Move not valid: regular checkers can only move forward.\n" + movesLog.getText());
+                }
+                else if (board.isTargetOccupied(move))
+                {
+                    movesLog.setText("Move not valid: target tile is already occupied.\n" + movesLog.getText());
+                }
+                else if (!board.isValidJump(move))
+                {
+                    movesLog.setText("Move not valid: you can only capture the opponent's checker.\n" + movesLog.getText());
+                }
+
                 Cell target = move.getSource().getCell();
                 move = new Move(move.getSource(), target);
             }
@@ -209,10 +233,11 @@ public class GUI extends Application
 
             tiles[row][col].setMaxSize(70, 70);
             tiles[row][col].getChildren().add(checkers[row][col]);
+
+            if (hintsToggled)
+                showHints();
         }
 
-        if (hintsToggled)
-            showHints();
     }
 
     private void generateInfoPane()
@@ -223,7 +248,8 @@ public class GUI extends Application
         movesLogPane.setPadding(new Insets(0, 10, 0, 10));
         Label movesLogLabel = new Label("Moves Log");
         movesLog = new TextArea();
-        movesLog.setPrefSize(200, 330);
+        movesLog.setWrapText(true);
+        movesLog.setPrefSize(200, 380);
         movesLog.setEditable(false);
         Separator separator = new Separator();
         separator.setPadding(new Insets(15, 10, 10, 10));
@@ -232,8 +258,8 @@ public class GUI extends Application
         VBox bottomPane = new VBox();
         bottomPane.setPadding(new Insets(0, 10, 10, 10));
         Label blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckers(true).size()));
-        Label whitesCaptures = new Label("Whites Captured: " + (12 - match.getBoard().getCheckers(false).size()));
-        bottomPane.getChildren().addAll(blacksCaptured, whitesCaptures);
+        Label whitesCaptured = new Label("Whites Captured: " + (12 - match.getBoard().getCheckers(false).size()));
+        bottomPane.getChildren().addAll(blacksCaptured, whitesCaptured);
 
         infoPane.setTop(topPane);
         infoPane.setCenter(movesLogPane);
@@ -266,6 +292,10 @@ public class GUI extends Application
             }
         });
         CheckBox toggleHints = new CheckBox("Toggle Hints");
+        if (hintsToggled)
+        {
+            toggleHints.setSelected(true);
+        }
         toggleHints.setPadding(new Insets(10, 10, 10, 10));
         toggleHints.setOnAction(event ->
         {
@@ -306,18 +336,20 @@ public class GUI extends Application
     {
         List<Checker> movableUserCheckers = board.getMovableCheckers(CheckersGame.Player.HUMAN);
 
-        for (int i = 0; i < movableUserCheckers.size(); i++)
-        {
+        for (int i = 0; i < movableUserCheckers.size(); i++) {
             int row = movableUserCheckers.get(i).getRow();
             int col = movableUserCheckers.get(i).getColumn();
 
-            if (hintsToggled)
+            if (checkers[row][col] != null)
             {
-                checkers[row][col].setStroke(Color.RED);
-            }
-            else
-            {
-                checkers[row][col].setStroke(Color.WHITE);
+                if (hintsToggled)
+                {
+                    checkers[row][col].setStroke(Color.RED);
+                }
+                else
+                {
+                    checkers[row][col].setStroke(Color.WHITE);
+                }
             }
         }
     }

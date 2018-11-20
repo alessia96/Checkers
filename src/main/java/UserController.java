@@ -24,7 +24,6 @@ public class UserController
     public void onCheckerPressed(int row, int col)
     {
         source = board.getCellAt(row, col).getChecker();
-        System.out.println("on checker pressed " + source.isBlack());
     }
 
     public void onCheckerReleased(Circle checker)
@@ -42,6 +41,12 @@ public class UserController
     {
         int xIndex = (int) Math.floor(worldX / 70);
         int yIndex = (int) Math.floor(worldY / 70);
+
+        if (xIndex < 0 || xIndex >= board.getGrid().length || yIndex < 0 || yIndex >= board.getGrid().length)
+        {
+            xIndex = source.getRow();
+            yIndex = source.getColumn();
+        }
 
         return board.getCellAt(xIndex, yIndex);
     }

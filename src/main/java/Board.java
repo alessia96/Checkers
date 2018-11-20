@@ -7,6 +7,7 @@ public class Board
     private CheckersGame match;
     private Cell[][] grid;
     private Cell idle;
+    private Checker checkerInBetween;
 
     public Board(CheckersGame match)
     {
@@ -100,6 +101,19 @@ public class Board
         return grid;
     }
 
+    public Checker getCheckerInBetween()
+    {
+        return checkerInBetween;
+    }
+
+    public void setCheckerInBetween(boolean existing)
+    {
+        if (!existing)
+        {
+            checkerInBetween = null;
+        }
+    }
+
     public void makeMove(Move move, boolean isTest)
     {
         if (move.getSource().isBlack())
@@ -119,7 +133,7 @@ public class Board
 
         if (isCheckerInBetween(move))
         {
-            Checker checkerInBetween = idle.getChecker();
+            checkerInBetween = idle.getChecker();
             //System.out.println("captured ------------------------------------------------");
             grid[checkerInBetween.getRow()][checkerInBetween.getColumn()].emptyCell();
             grid[checkerInBetween.getRow()][checkerInBetween.getColumn()] = new Cell(null, checkerInBetween.getRow(), checkerInBetween.getColumn(), true);
@@ -151,7 +165,7 @@ public class Board
         return true;
     }
 
-    private boolean isSourceSameAsTarget(Move move)
+    public boolean isSourceSameAsTarget(Move move)
     {
         if (move.getSource().getCell().getRow() == move.getTarget().getRow() &&
             move.getSource().getCell().getColumn() == move.getTarget().getColumn())
@@ -165,12 +179,12 @@ public class Board
         }
     }
 
-    private boolean isTargetWhite(Move move)
+    public boolean isTargetWhite(Move move)
     {
         return !move.getTarget().isBlack();
     }
 
-    private boolean isMovingBackwards(Move move)
+    public boolean isMovingBackwards(Move move)
     {
         if (move.getSource().isBlack() &&
                 (move.getSource().getRow() < move.getTarget().getRow()))
@@ -186,7 +200,7 @@ public class Board
         return true;
     }
 
-    private boolean isTargetOccupied(Move move)
+    public boolean isTargetOccupied(Move move)
     {
         if (move.getTarget().isOccupied())
         {
@@ -196,7 +210,7 @@ public class Board
         return false;
     }
 
-    private boolean isValidJump(Move move)
+    public boolean isValidJump(Move move)
     {
         System.out.println("check if valid jump for " + move.getSource().getRow() + " " + move.getSource().getColumn() + " to "
             + move.getTarget().getRow() + " " + move.getTarget().getColumn());
@@ -220,7 +234,7 @@ public class Board
         return false;
     }
 
-    private boolean isCheckerInBetween(Move move)
+    public boolean isCheckerInBetween(Move move)
     {
         idle = null;
         boolean blackSource = move.getSource().isBlack();
@@ -402,10 +416,12 @@ public class Board
             // if cell in between is occupied by a white cell and next cell is empty
             if (botRight != null && botRight.isOccupied() && !botRight.getChecker().isBlack() && jumpBotRight != null && !jumpBotRight.isOccupied())
             {
+                System.out.println("can capture");
                 return true;
             }
             if (botLeft != null && botLeft.isOccupied() && !botLeft.getChecker().isBlack() && jumpBotLeft != null && !jumpBotLeft.isOccupied())
             {
+                System.out.println("can capture");
                 return true;
             }
         }
@@ -414,13 +430,17 @@ public class Board
             // if cell in between is occupied by a black cell and next cell is empty
             if (topRight != null && topRight.isOccupied() && topRight.getChecker().isBlack() && jumpTopRight != null && !jumpTopRight.isOccupied())
             {
+                System.out.println("can capture");
                 return true;
             }
             if (topLeft != null && topLeft.isOccupied() && topLeft.getChecker().isBlack() && jumpTopLeft != null && !jumpTopLeft.isOccupied())
             {
+                System.out.println("can capture");
                 return true;
             }
         }
+
+        System.out.println("canNOT capture");
         return false;
     }
 
