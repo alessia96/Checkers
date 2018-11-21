@@ -2,6 +2,7 @@ public class Move
 {
     private Checker source;
     private Cell target;
+    public Checker capturedChecker;
 
     public Move(Checker source, Cell target)
     {

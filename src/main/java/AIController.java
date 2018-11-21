@@ -7,7 +7,7 @@ public class AIController
     private List<Move> availableMoves;
     public List<MovesAndScores> successorEvaluations;
     public int seCount, deCount, pCount;
-    private int maxDepth = 5;
+    private int maxDepth;
 
     public AIController(Board board)
     {
@@ -17,7 +17,7 @@ public class AIController
     public Move getAIMove(int difficulty)
     {
         // temporarily changing it to 1
-        difficulty = 1;
+        difficulty = 5;
 
         if (difficulty == 0)
         {
@@ -26,7 +26,6 @@ public class AIController
         else
         {
             successorEvaluations = new ArrayList<>();
-            board.setCheckerInBetween(false);
             maxDepth = difficulty;
             deCount = 0;
             seCount = 0;
@@ -70,16 +69,7 @@ public class AIController
 
         for (int i = 0; i < movesAvailable.size(); i++)
         {
-//            Board temp = null;
-//
-//            try
-//            {
-//                temp = (Board) board.clone();
-//            }
-//            catch (Exception e)
-//            {
-//                System.out.println("exception");
-//            }
+            List<Checker> allCheckers = board.cloneHistory(board.getCheckers());
 
             Move move = movesAvailable.get(i);
 //            System.out.println(move.getSource().getRow() + " " + move.getSource().getColumn() +
@@ -110,23 +100,17 @@ public class AIController
                 beta = Math.min(currentScore, beta);
             }
 
-            int sourceRow = move.getSource().getRow();
-            int sourceCol = move.getSource().getColumn();
-            int targetRow = move.getTarget().getRow();
-            int targetCol = move.getTarget().getColumn();
+//            int sourceRow = move.getSource().getRow();
+//            int sourceCol = move.getSource().getColumn();
+//            int targetRow = move.getTarget().getRow();
+//            int targetCol = move.getTarget().getColumn();
 
-            board.getCellAt(sourceRow, sourceCol).occupyCell(move.getSource());
-            board.getCellAt(targetRow, targetCol).emptyCell();
-            board.setCheckerInBetween(false);
+            //board.getCellAt(sourceRow, sourceCol).occupyCell(move.getSource());
+            //board.getCellAt(targetRow, targetCol).emptyCell();
 
-//            try
-//            {
-//                board = (Board) temp.clone();
-//            }
-//            catch (Exception e)
-//            {
-//                System.out.println("exception");
-//            }
+            board.clearBoard();
+            board.fillWithExistingCheckers(allCheckers);
+            if (move.capturedChecker != null) move.capturedChecker.getCell().emptyCell();
 
             if(alpha >= beta)
             {

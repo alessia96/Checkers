@@ -1,5 +1,4 @@
 import javafx.geometry.Bounds;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 
 public class UserController
@@ -18,7 +17,6 @@ public class UserController
 
     public Move getUserMove()
     {
-        board.setCheckerInBetween(false);
         return userMove;
     }
 
