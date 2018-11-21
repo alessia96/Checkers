@@ -86,11 +86,11 @@ public class Board
             {
                 if (((row == 0 || row == 2) && col % 2 == 1) || row == 1 && col % 2 == 0)
                 {
-                    grid[row][col].occupyCell(new Checker(this, true, row, col));     // fill up blacks
+                    grid[row][col].occupyCell(new Checker(this, Checker.Colour.BLACK, row, col));     // fill up blacks
                 }
                 else if (((row == 5 || row == 7) && col % 2 == 0) || row == 6 && col % 2 == 1)
                 {
-                    grid[row][col].occupyCell(new Checker(this, false, row, col));    // fill up whites
+                    grid[row][col].occupyCell(new Checker(this, Checker.Colour.WHITE, row, col));    // fill up whites
                 }
             }
         }
@@ -141,11 +141,11 @@ public class Board
             {
                 if (grid[row][col].isOccupied())
                 {
-                    if (isBlack && grid[row][col].getChecker().isBlack())
+                    if (isBlack && grid[row][col].getChecker().getColour() == Checker.Colour.BLACK)
                     {
                         checkers.add(grid[row][col].getChecker());
                     }
-                    else if (!isBlack && !grid[row][col].getChecker().isBlack())
+                    else if (!isBlack && grid[row][col].getChecker().getColour() == Checker.Colour.WHITE)
                     {
                         checkers.add(grid[row][col].getChecker());
                     }
@@ -166,19 +166,12 @@ public class Board
         return checkerInBetween;
     }
 
+    // return true if a move is still available, false if it can give up turn to oopponent
     public void makeMove(Move move, boolean isTest)
     {
         boolean captureHappened = false;
-        if (move.getSource().isBlack())
-        {
-            //System.out.println("source moved");
-            grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, true, move.getTarget().getRow(), move.getTarget().getColumn()));
-        }
-        else
-        {
-//            System.out.println("source moved");
-            grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, false, move.getTarget().getRow(), move.getTarget().getColumn()));
-        }
+
+        grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, move.getSource().getColour(), move.getTarget().getRow(), move.getTarget().getColumn()));
 
         grid[move.getSource().getRow()][move.getSource().getColumn()].emptyCell();
         //grid[move.getSource().getRow()][move.getSource().getColumn()] = new Cell(null, move.getSource().getRow(), move.getSource().getColumn(), true);
@@ -194,8 +187,12 @@ public class Board
 
             checkerInBetween.getCell().emptyCell();
             checkerInBetween = null;
-            captureHappened = true;
             //grid[checkerInBetween.getRow()][checkerInBetween.getColumn()] = new Cell(null, checkerInBetween.getRow(), checkerInBetween.getColumn(), true);
+        }
+
+        if (move.getTarget().getRow() == grid.length - 1)
+        {
+            crownKing(move.getTarget().getChecker());
         }
 
         if (!isTest)
@@ -211,7 +208,6 @@ public class Board
                 match.setTurn(CheckersGame.Player.AI);
             }
         }
-
 //        System.out.println("move made from " + move.getSource().getRow() + " " + move.getSource().getColumn() + " to " +
 //                move.getTarget().getRow() + " " + move.getTarget().getColumn());
     }
@@ -247,12 +243,12 @@ public class Board
 
     public boolean isMovingBackwards(Move move)
     {
-        if (move.getSource().isBlack() &&
+        if (move.getSource().getColour() == Checker.Colour.BLACK &&
                 (move.getSource().getRow() < move.getTarget().getRow()))
         {
             return false;
         }
-        else if (!move.getSource().isBlack() &&
+        else if (move.getSource().getColour() == Checker.Colour.WHITE &&
                 (move.getSource().getRow() > move.getTarget().getRow()))
         {
             return false;
@@ -297,8 +293,8 @@ public class Board
 
     public boolean isCheckerInBetween(Move move)
     {
-        boolean blackSource = move.getSource().isBlack();
-        boolean whiteSource = !move.getSource().isBlack();
+        boolean blackSource = move.getSource().getColour() == Checker.Colour.BLACK;
+        boolean whiteSource = move.getSource().getColour() == Checker.Colour.WHITE;
         boolean moveRight = move.getSource().getColumn() < move.getTarget().getColumn();
         boolean moveLeft = move.getSource().getColumn() > move.getTarget().getColumn();
         Cell botRight = null;
@@ -318,22 +314,22 @@ public class Board
         if (move.getSource().getRow() - 1 >= 0 && move.getSource().getColumn() - 1 >= 0)
             topLeft = getCellAt(move.getSource().getRow() - 1, move.getSource().getColumn() - 1);
 
-        if (blackSource && moveRight && botRight.isOccupied() && !botRight.getChecker().isBlack())
+        if (blackSource && moveRight && botRight.isOccupied() && botRight.getChecker().getColour() == Checker.Colour.WHITE)
         {
             checkerInBetween = botRight.getChecker();
             return true;
         }
-        else if (blackSource && moveLeft && botLeft.isOccupied() && !botLeft.getChecker().isBlack())
+        else if (blackSource && moveLeft && botLeft.isOccupied() && botLeft.getChecker().getColour() == Checker.Colour.WHITE)
         {
             checkerInBetween = botLeft.getChecker();
             return true;
         }
-        else if (whiteSource && moveRight && topRight.isOccupied() && topRight.getChecker().isBlack())
+        else if (whiteSource && moveRight && topRight.isOccupied() && topRight.getChecker().getColour() == Checker.Colour.BLACK)
         {
             checkerInBetween = topRight.getChecker();
             return true;
         }
-        else if (whiteSource && moveLeft && topLeft.isOccupied() && topLeft.getChecker().isBlack())
+        else if (whiteSource && moveLeft && topLeft.isOccupied() && topLeft.getChecker().getColour() == Checker.Colour.BLACK)
         {
             checkerInBetween = topLeft.getChecker();
             return true;
@@ -352,7 +348,7 @@ public class Board
             {
                 for (int col = 0; col < grid.length; col++)
                 {
-                    if (grid[row][col].isOccupied() && grid[row][col].getChecker().isBlack())
+                    if (grid[row][col].isOccupied() && grid[row][col].getChecker().getColour() == Checker.Colour.BLACK)
                     {
                         if (canMove(grid[row][col].getChecker(), turn))
                         {
@@ -373,7 +369,7 @@ public class Board
             {
                 for (int col = 0; col < grid.length; col++)
                 {
-                    if (grid[row][col].isOccupied() && !grid[row][col].getChecker().isBlack())
+                    if (grid[row][col].isOccupied() && grid[row][col].getChecker().getColour() == Checker.Colour.WHITE)
                     {
                         if (canMove(grid[row][col].getChecker(), turn))
                         {
@@ -481,28 +477,28 @@ public class Board
         if (player == CheckersGame.Player.HUMAN)  // black
         {
             // if cell in between is occupied by a white cell and next cell is empty
-            if (botRight != null && botRight.isOccupied() && !botRight.getChecker().isBlack() && jumpBotRight != null && !jumpBotRight.isOccupied())
+            if (botRight != null && botRight.isOccupied() && botRight.getChecker().getColour() == Checker.Colour.WHITE && jumpBotRight != null && !jumpBotRight.isOccupied())
             {
-                //checkerInBetween = botRight.getChecker();
+                checkerInBetween = botRight.getChecker();
                 return true;
             }
-            if (botLeft != null && botLeft.isOccupied() && !botLeft.getChecker().isBlack() && jumpBotLeft != null && !jumpBotLeft.isOccupied())
+            if (botLeft != null && botLeft.isOccupied() && botLeft.getChecker().getColour() == Checker.Colour.WHITE && jumpBotLeft != null && !jumpBotLeft.isOccupied())
             {
-                //checkerInBetween = botLeft.getChecker();
+                checkerInBetween = botLeft.getChecker();
                 return true;
             }
         }
         else if (player == CheckersGame.Player.AI)    // white
         {
             // if cell in between is occupied by a black cell and next cell is empty
-            if (topRight != null && topRight.isOccupied() && topRight.getChecker().isBlack() && jumpTopRight != null && !jumpTopRight.isOccupied())
+            if (topRight != null && topRight.isOccupied() && topRight.getChecker().getColour() == Checker.Colour.BLACK && jumpTopRight != null && !jumpTopRight.isOccupied())
             {
-                //checkerInBetween = topRight.getChecker();
+                checkerInBetween = topRight.getChecker();
                 return true;
             }
-            if (topLeft != null && topLeft.isOccupied() && topLeft.getChecker().isBlack() && jumpTopLeft != null && !jumpTopLeft.isOccupied())
+            if (topLeft != null && topLeft.isOccupied() && topLeft.getChecker().getColour() == Checker.Colour.BLACK && jumpTopLeft != null && !jumpTopLeft.isOccupied())
             {
-                //checkerInBetween = topLeft.getChecker();
+                checkerInBetween = topLeft.getChecker();
                 return true;
             }
         }
@@ -539,9 +535,12 @@ public class Board
 
                         if (isMoveValid(testMove))
                         {
-                            //tempBoard.makeMove(testMove, true);
-                            //System.out.println("move available from " + testMove.getSource().getRow() + " " + testMove.getSource().getColumn() + " to " +
-                            //        testMove.getTarget().getRow() + " " + testMove.getTarget().getColumn());
+//                            Cell newTarget = checkForOtherCapture(target);
+//
+//                            if (newTarget != null)
+//                            {
+//                                testMove = new Move(source.getChecker(), newTarget);
+//                            }
                             availableMoves.add(testMove);
                         }
                     }
@@ -550,5 +549,11 @@ public class Board
         }
 
         return availableMoves;
+    }
+
+    public void crownKing(Checker checker)
+    {
+        grid[checker.getRow()][checker.getColumn()].emptyCell();
+        grid[checker.getRow()][checker.getColumn()].occupyCell(new King(this, checker.getColour(), checker.getRow(), checker.getColumn()));
     }
 }

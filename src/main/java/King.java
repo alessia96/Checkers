@@ -1,4 +1,7 @@
-public class King
+public class King extends Checker
 {
-    // extend checker
+    public King(Board board, Colour colour, int row, int column)
+    {
+        super(board, colour, row, column);
+    }
 }

@@ -1,21 +1,23 @@
 public class Checker
 {
-    private boolean isBlack;
+    public enum Colour { BLACK, WHITE }
+    private Colour colour;
     private int currentRow;
     private int currentCol;
     private Board board;
+    private boolean isKing;
 
-    public Checker(Board board, boolean isBlack, int row, int column)
+    public Checker(Board board, Colour colour, int row, int column)
     {
         this.board = board;
-        this.isBlack = isBlack;
+        this.colour = colour;
         currentRow = row;
         currentCol = column;
     }
 
-    public boolean isBlack()
+    public Colour getColour()
     {
-        return isBlack;
+        return colour;
     }
 
     public int getRow()
@@ -31,5 +33,15 @@ public class Checker
     public Cell getCell()
     {
         return board.getCellAt(currentRow, currentCol);
+    }
+
+    public boolean isKing()
+    {
+        return isKing;
+    }
+
+    public void setKing()
+    {
+        isKing = true;
     }
 }

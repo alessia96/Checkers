@@ -1,22 +1,34 @@
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import jfxtras.labs.util.event.MouseControlUtil;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -182,7 +194,12 @@ public class GUI extends Application
                     if (board.getCellAt(row, col).isOccupied())
                     {
                         checkers[row][col] = new Circle(35, 35, 30);
-                        if (!board.getCellAt(row, col).getChecker().isBlack())
+
+                        if (board.getCellAt(row, col).getChecker().isKing())
+                        {
+                            //TODO
+                        }
+                        if (board.getCellAt(row, col).getChecker().getColour() == Checker.Colour.WHITE)
                         {
                             checkers[row][col].setFill(Color.WHITE);
                         }
@@ -201,12 +218,25 @@ public class GUI extends Application
                         }
                         checkers[row][col].setStroke(Color.WHITE);
 
+//                        BufferedImage b = null;
+//                        try {
+//                            b = ImageIO.read(getClass().getClassLoader().getResource("crown.png"));
+//                        } catch(Exception e)
+//                        {
+//
+//                        }
+//                        WritableImage i = SwingFXUtils.toFXImage(b, null);
+//                        ImageView v = new ImageView(i);
+//                        v.setScaleX(0.1);
+//                        v.setScaleY(0.1);
                         tiles[row][col].setMaxSize(70, 70);
                         tiles[row][col].getChildren().add(checkers[row][col]);
 
-                        if (hintsToggled)
+                        if (hintsToggled) {
                             showHints();
+                        }
                     }
+
 
                     tiles[row][col].addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
                             System.out.println(board.getCellAt(row, col).isOccupied()));
@@ -216,7 +246,8 @@ public class GUI extends Application
 
                 if (!board.getCellAt(row, col).isBlack())
                 {
-                    Box box = new Box(70, 70, 0);
+                    Rectangle box = new Rectangle(70, 70);
+                    box.setFill(Color.WHITE);
                     gridPane.add(box, col, row);
                 }
             })

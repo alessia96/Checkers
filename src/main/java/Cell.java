@@ -27,6 +27,10 @@ public class Cell
     {
         checkerOccupying = checker;
         occupied = true;
+        if (checker instanceof King)
+        {
+            checker.setKing();
+        }
     }
 
     public boolean isOccupied()
