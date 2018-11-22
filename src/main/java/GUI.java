@@ -77,14 +77,14 @@ public class GUI extends Application
             match.getAIController().updateBoard(board);
             move = match.getAIController().getAIMove(selectedDifficulty);
 
-            System.out.println("seCount " + match.getAIController().seCount + ", deCount " + match.getAIController().deCount +
+            /*System.out.println("seCount " + match.getAIController().seCount + ", deCount " + match.getAIController().deCount +
                     ", pCount " + match.getAIController().pCount);
             for (MovesAndScores mas : match.getAIController().successorEvaluations)
             {
                 System.out.println("Move: " + mas.getMove().getSource().getRow() + " "
                         + mas.getMove().getSource().getColumn() + " to " + mas.getMove().getTarget().getRow() + " " +
                         mas.getMove().getTarget().getColumn() + ", scores " + mas.getScore());
-            }
+            }*/
 
             boolean valid = false;
             List<Move> states = board.getAvailableStates(match.getTurn());
@@ -108,7 +108,6 @@ public class GUI extends Application
         }
         else if (match.getTurn() == CheckersGame.Player.HUMAN)
         {
-            //System.out.println(board.getCellAt(5, 0).isOccupied());
             move = match.getUserController().getUserMove();
             boolean valid = false;
             List<Move> states = board.getAvailableStates(match.getTurn());

@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class AIController
 {
     private Board board;
-    private List<Move> availableMoves;
     public List<MovesAndScores> successorEvaluations;
     public int seCount, deCount, pCount;
     private int maxDepth;
@@ -16,12 +16,9 @@ public class AIController
 
     public Move getAIMove(int difficulty)
     {
-        // temporarily changing it to 1
-        difficulty = 5;
-
         if (difficulty == 0)
         {
-            // call random
+            return getRandomMove();
         }
         else
         {
@@ -45,8 +42,13 @@ public class AIController
 
             return successorEvaluations.get(best).getMove();
         }
+    }
 
-        return null;
+    private Move getRandomMove()
+    {
+        List<Move> movesAvailable = board.getAvailableStates(CheckersGame.Player.AI);
+        int random = (int) Math.random() * movesAvailable.size();
+        return movesAvailable.get(random);
     }
 
     public int minimax(int depth, CheckersGame.Player player, int alpha, int beta)
@@ -59,7 +61,6 @@ public class AIController
             return board.getCheckers(true).size() - board.getCheckers(false).size();
         }
 
-        //System.out.println(depth);
         List<Move> movesAvailable = board.getAvailableStates(player);
         if (movesAvailable.isEmpty())
         {
@@ -72,8 +73,6 @@ public class AIController
             List<Checker> allCheckers = board.cloneHistory(board.getCheckers());
 
             Move move = movesAvailable.get(i);
-//            System.out.println(move.getSource().getRow() + " " + move.getSource().getColumn() +
-//                    " to " + move.getTarget().getRow() + " " + move.getTarget().getColumn());
             deCount++;
 
             if (player == CheckersGame.Player.AI) // MAX - white (AI)
@@ -100,14 +99,6 @@ public class AIController
                 beta = Math.min(currentScore, beta);
             }
 
-//            int sourceRow = move.getSource().getRow();
-//            int sourceCol = move.getSource().getColumn();
-//            int targetRow = move.getTarget().getRow();
-//            int targetCol = move.getTarget().getColumn();
-
-            //board.getCellAt(sourceRow, sourceCol).occupyCell(move.getSource());
-            //board.getCellAt(targetRow, targetCol).emptyCell();
-
             board.clearBoard();
             board.fillWithExistingCheckers(allCheckers);
             if (move.capturedChecker != null) move.capturedChecker.getCell().emptyCell();
@@ -115,7 +106,6 @@ public class AIController
             if(alpha >= beta)
             {
                 pCount++;
-                //System.out.println("Pruning at level "+depth+" because "+alpha+">="+beta+").");
                 break;
             }
         }

@@ -3,19 +3,9 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class BoardTest
 {
-    /*@Test
-    public void cloneTest()
-    {
-        Board board = new Board(new CheckersGame());
-        Board clonedBoard = board.clone();
-        board.getGrid()[1][2] = null;
-        assert(board.getGrid()[1][2] != clonedBoard.getGrid()[1][2]);
-    }*/
-
     @Test
     public void getCheckersTest()
     {

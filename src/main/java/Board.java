@@ -9,6 +9,7 @@ public class Board
     private Checker checkerInBetween;
     private List<Cell> toJumpTo;
     private List<Checker> checkerThatCanCapture;
+    private boolean capturingMove;
 
     public Board(CheckersGame match)
     {
@@ -18,21 +19,6 @@ public class Board
         fillWithCheckers();
         checkerThatCanCapture = new ArrayList<>();
         toJumpTo = new ArrayList<>();
-    }
-
-   public Board(Board thisBoard)
-    {
-        this.match = thisBoard.match;
-        grid = new Cell[8][8];
-        fillWithCells();
-        fillWithCheckers();
-        checkerThatCanCapture = new ArrayList<>();
-        toJumpTo = new ArrayList<>();
-    }
-
-    public Object clone() throws CloneNotSupportedException
-    {
-        return new Board(this);
     }
 
     private void fillWithCells()
@@ -169,28 +155,23 @@ public class Board
         return checkerInBetween;
     }
 
-    // return true if a move is still available, false if it can give up turn to oopponent
+    // return true if a move is still available, false if it can give up turn to opponent
     public void makeMove(Move move, boolean isTest)
     {
-        boolean captureHappened = false;
-
         grid[move.getTarget().getRow()][move.getTarget().getColumn()].occupyCell(new Checker(this, move.getSource().getColour(), move.getTarget().getRow(), move.getTarget().getColumn(), move.getSource().isKing()));
 
         grid[move.getSource().getRow()][move.getSource().getColumn()].emptyCell();
-        //grid[move.getSource().getRow()][move.getSource().getColumn()] = new Cell(null, move.getSource().getRow(), move.getSource().getColumn(), true);
-        //System.out.println(grid[move.getSource().getRow()][move.getSource().getColumn()].isOccupied());
 
-        if (checkerInBetween != null)
+        if (capturingMove)
         {
             if (!isTest)
             {
                 move.capturedChecker = checkerInBetween;
-                System.out.println("captured ------------------------------------------------");
             }
 
             checkerInBetween.getCell().emptyCell();
             checkerInBetween = null;
-            //grid[checkerInBetween.getRow()][checkerInBetween.getColumn()] = new Cell(null, checkerInBetween.getRow(), checkerInBetween.getColumn(), true);
+            capturingMove = false;
         }
 
         if ((move.getSource().getColour() == Checker.Colour.BLACK && move.getTarget().getRow() == grid.length - 1)
@@ -201,8 +182,6 @@ public class Board
 
         if (!isTest)
         {
-//            System.out.println("making move " + move.getSource().getRow() +  " " + move.getSource().getColumn() + " to " +
-//                    move.getTarget().getRow() + " " + move.getTarget().getColumn());
             if (match.getTurn() == CheckersGame.Player.AI)
             {
                 match.setTurn(CheckersGame.Player.HUMAN);
@@ -212,8 +191,6 @@ public class Board
                 match.setTurn(CheckersGame.Player.AI);
             }
         }
-//        System.out.println("move made from " + move.getSource().getRow() + " " + move.getSource().getColumn() + " to " +
-//                move.getTarget().getRow() + " " + move.getTarget().getColumn());
     }
 
     public boolean isMoveValid(Move move)
@@ -231,7 +208,6 @@ public class Board
         if (move.getSource().getCell().getRow() == move.getTarget().getRow() &&
             move.getSource().getCell().getColumn() == move.getTarget().getColumn())
         {
-            //System.out.println("source is same as target");
             return true;
         }
         else
@@ -259,7 +235,6 @@ public class Board
         {
             return false;
         }
-        //System.out.println("is moving backwards");
         return true;
     }
 
@@ -267,7 +242,6 @@ public class Board
     {
         if (move.getTarget().isOccupied())
         {
-            //System.out.println("target is occupied");
             return true;
         }
         return false;
@@ -275,17 +249,13 @@ public class Board
 
     public boolean isValidJump(Move move)
     {
-//        System.out.println("check if valid jump for " + move.getSource().getRow() + " " + move.getSource().getColumn() + " to "
-//            + move.getTarget().getRow() + " " + move.getTarget().getColumn());
-//        System.out.println("source " + move.getSource().getRow() + " " + move.getSource().getColumn());
-//        System.out.println("is target " + move.getTarget().getRow() + " " + move.getTarget().getColumn() + " occupied: " + move.getTarget().isOccupied());
-
         if (isCheckerInBetween(move))
         {
             for (Cell c : toJumpTo)
             {
                 if (c.getRow() == move.getTarget().getRow() && c.getColumn() == move.getTarget().getColumn())
                 {
+                    capturingMove = true;
                     return true;
                 }
             }
@@ -294,15 +264,12 @@ public class Board
         }
         else if (!toJumpTo.isEmpty()) return false;
 
-        /*else if (Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 1
-            && Math.abs(move.getSource().getColumn() - move.getTarget().getColumn()) == 1 && !move.getTarget().isOccupied())
+        if (Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 1
+                && Math.abs(move.getSource().getColumn() - move.getTarget().getColumn()) == 1 && !move.getTarget().isOccupied())
         {
-            //System.out.println("jump valid: moved of 1");
             return true;
-        }*/
-
-        //System.out.println("jump not valid");
-        return true;
+        }
+        return false;
     }
 
     public boolean isCheckerInBetween(Move move)
@@ -391,7 +358,6 @@ public class Board
                         }
                         if (canCapture(grid[row][col], turn))
                         {
-                            //System.out.println("black added " + row + " " + col);
                             checkerThatCanCapture.add(grid[row][col].getChecker());
                         }
                     }
@@ -412,7 +378,6 @@ public class Board
                         }
                         if (canCapture(grid[row][col], turn))
                         {
-                            //System.out.println("black added " + row + " " + col);
                             checkerThatCanCapture.add(grid[row][col].getChecker());
                         }
                     }
@@ -574,7 +539,6 @@ public class Board
             }
         }
 
-        //System.out.println("canNOT capture");
         return false;
     }
 
@@ -601,17 +565,8 @@ public class Board
 
                         testMove = new Move(source.getChecker(), target);
 
-//                        System.out.println(source.getRow() + " " + source.getColumn() + " to " +
-//                                target.getRow() + " " + target.getColumn());
-
                         if (isMoveValid(testMove))
                         {
-//                            Cell newTarget = checkForOtherCapture(target);
-//
-//                            if (newTarget != null)
-//                            {
-//                                testMove = new Move(source.getChecker(), newTarget);
-//                            }
                             availableMoves.add(testMove);
                         }
                     }
