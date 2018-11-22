@@ -7,6 +7,7 @@ public class Board
     private CheckersGame match;
     private Cell[][] grid;
     private Checker checkerInBetween;
+    private List<Cell> toJumpTo;
     private List<Checker> checkerThatCanCapture;
 
     public Board(CheckersGame match)
@@ -16,6 +17,7 @@ public class Board
         fillWithCells();
         fillWithCheckers();
         checkerThatCanCapture = new ArrayList<>();
+        toJumpTo = new ArrayList<>();
     }
 
    public Board(Board thisBoard)
@@ -25,6 +27,7 @@ public class Board
         fillWithCells();
         fillWithCheckers();
         checkerThatCanCapture = new ArrayList<>();
+        toJumpTo = new ArrayList<>();
     }
 
     public Object clone() throws CloneNotSupportedException
@@ -277,21 +280,29 @@ public class Board
 //        System.out.println("source " + move.getSource().getRow() + " " + move.getSource().getColumn());
 //        System.out.println("is target " + move.getTarget().getRow() + " " + move.getTarget().getColumn() + " occupied: " + move.getTarget().isOccupied());
 
-        if (((Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 2) &&
-                Math.abs(move.getSource().getColumn() - move.getTarget().getColumn()) == 2) && isCheckerInBetween(move))
+        if (isCheckerInBetween(move))
         {
-            //System.out.println("jump valid: checker is in between");
-            return true;
+            for (Cell c : toJumpTo)
+            {
+                if (c.getRow() == move.getTarget().getRow() && c.getColumn() == move.getTarget().getColumn())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
-        else if (Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 1
+        else if (!toJumpTo.isEmpty()) return false;
+
+        /*else if (Math.abs(move.getSource().getRow() - move.getTarget().getRow()) == 1
             && Math.abs(move.getSource().getColumn() - move.getTarget().getColumn()) == 1 && !move.getTarget().isOccupied())
         {
             //System.out.println("jump valid: moved of 1");
             return true;
-        }
+        }*/
 
         //System.out.println("jump not valid");
-        return false;
+        return true;
     }
 
     public boolean isCheckerInBetween(Move move)
@@ -364,6 +375,7 @@ public class Board
     {
         List<Checker> movableCheckers = new ArrayList<>();
         checkerThatCanCapture.clear();
+        toJumpTo.clear();
 
         if (turn == CheckersGame.Player.HUMAN)
         {
@@ -511,21 +523,25 @@ public class Board
             if (botRight != null && botRight.isOccupied() && botRight.getChecker().getColour() == Checker.Colour.WHITE && jumpBotRight != null && !jumpBotRight.isOccupied())
             {
                 checkerInBetween = botRight.getChecker();
+                toJumpTo.add(jumpBotRight);
                 return true;
             }
             if (botLeft != null && botLeft.isOccupied() && botLeft.getChecker().getColour() == Checker.Colour.WHITE && jumpBotLeft != null && !jumpBotLeft.isOccupied())
             {
                 checkerInBetween = botLeft.getChecker();
+                toJumpTo.add(jumpBotLeft);
                 return true;
             }
             if (c.getChecker().isKing() && topRight != null && topRight.isOccupied() && topRight.getChecker().getColour() == Checker.Colour.WHITE && jumpTopRight != null && !jumpTopRight.isOccupied())
             {
                 checkerInBetween = topRight.getChecker();
+                toJumpTo.add(jumpTopRight);
                 return true;
             }
             if (c.getChecker().isKing() && topLeft != null && topLeft.isOccupied() && topLeft.getChecker().getColour() == Checker.Colour.WHITE && jumpTopLeft != null && !jumpTopLeft.isOccupied())
             {
                 checkerInBetween = topLeft.getChecker();
+                toJumpTo.add(jumpTopLeft);
                 return true;
             }
         }
@@ -535,21 +551,25 @@ public class Board
             if (topRight != null && topRight.isOccupied() && topRight.getChecker().getColour() == Checker.Colour.BLACK && jumpTopRight != null && !jumpTopRight.isOccupied())
             {
                 checkerInBetween = topRight.getChecker();
+                toJumpTo.add(jumpTopRight);
                 return true;
             }
             if (topLeft != null && topLeft.isOccupied() && topLeft.getChecker().getColour() == Checker.Colour.BLACK && jumpTopLeft != null && !jumpTopLeft.isOccupied())
             {
                 checkerInBetween = topLeft.getChecker();
+                toJumpTo.add(jumpTopLeft);
                 return true;
             }
             if (c.getChecker().isKing() && botRight != null && botRight.isOccupied() && botRight.getChecker().getColour() == Checker.Colour.BLACK && jumpBotRight != null && !jumpBotRight.isOccupied())
             {
                 checkerInBetween = botRight.getChecker();
+                toJumpTo.add(jumpBotRight);
                 return true;
             }
             if (c.getChecker().isKing() && botLeft != null && botLeft.isOccupied() && botLeft.getChecker().getColour() == Checker.Colour.BLACK && jumpBotLeft != null && !jumpBotLeft.isOccupied())
             {
                 checkerInBetween = botLeft.getChecker();
+                toJumpTo.add(jumpBotLeft);
                 return true;
             }
         }
