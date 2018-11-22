@@ -190,7 +190,8 @@ public class Board
             //grid[checkerInBetween.getRow()][checkerInBetween.getColumn()] = new Cell(null, checkerInBetween.getRow(), checkerInBetween.getColumn(), true);
         }
 
-        if (move.getTarget().getRow() == grid.length - 1)
+        if ((move.getSource().getColour() == Checker.Colour.BLACK && move.getTarget().getRow() == grid.length - 1)
+            || (move.getSource().getColour() == Checker.Colour.WHITE && move.getTarget().getRow() == 0))
         {
             crownKing(move.getTarget().getChecker());
         }

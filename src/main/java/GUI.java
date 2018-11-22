@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -27,6 +27,7 @@ import jfxtras.labs.util.event.MouseControlUtil;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import javafx.scene.image.Image;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -190,21 +191,39 @@ public class GUI extends Application
                 {
                     tiles[row][col] = new Pane();
                     tiles[row][col].setStyle("-fx-background-color: black");
+                    //tiles[row][col].setStyle("-fx-background-image: url('\"black_tile.png\"')");
 
                     if (board.getCellAt(row, col).isOccupied())
                     {
-                        checkers[row][col] = new Circle(35, 35, 30);
+                        checkers[row][col] = new Circle(37, 35, 30);
 
-                        if (board.getCellAt(row, col).getChecker().isKing())
-                        {
-                            //TODO
-                        }
+                        Image img;
                         if (board.getCellAt(row, col).getChecker().getColour() == Checker.Colour.WHITE)
                         {
-                            checkers[row][col].setFill(Color.WHITE);
+                            if (board.getCellAt(row, col).getChecker().isKing())
+                            {
+                                img = new Image("white_king.png");
+                            }
+                            else
+                            {
+                                img = new Image("white_checker.png");
+                            }
+
+                            checkers[row][col].setFill(new ImagePattern(img));
                         }
                         else
                         {
+                            if (board.getCellAt(row, col).getChecker().isKing())
+                            {
+                                img = new Image("black_king.png");
+                            }
+                            else
+                            {
+                                img = new Image("black_checker.png");
+                            }
+
+                            checkers[row][col].setFill(new ImagePattern(img));
+
                             MouseControlUtil.makeDraggable(checkers[row][col]);
 
                             checkers[row][col].addEventHandler(MouseEvent.MOUSE_PRESSED, event ->
@@ -216,27 +235,14 @@ public class GUI extends Application
                                 getMove();
                             });
                         }
-                        checkers[row][col].setStroke(Color.WHITE);
 
-//                        BufferedImage b = null;
-//                        try {
-//                            b = ImageIO.read(getClass().getClassLoader().getResource("crown.png"));
-//                        } catch(Exception e)
-//                        {
-//
-//                        }
-//                        WritableImage i = SwingFXUtils.toFXImage(b, null);
-//                        ImageView v = new ImageView(i);
-//                        v.setScaleX(0.1);
-//                        v.setScaleY(0.1);
                         tiles[row][col].setMaxSize(70, 70);
-                        tiles[row][col].getChildren().add(checkers[row][col]);
+                        tiles[row][col].getChildren().addAll(checkers[row][col]);
 
                         if (hintsToggled) {
                             showHints();
                         }
                     }
-
 
                     tiles[row][col].addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
                             System.out.println(board.getCellAt(row, col).isOccupied()));
@@ -247,7 +253,8 @@ public class GUI extends Application
                 if (!board.getCellAt(row, col).isBlack())
                 {
                     Rectangle box = new Rectangle(70, 70);
-                    box.setFill(Color.WHITE);
+                    Image img = new Image("wood.jpg");
+                    box.setFill(new ImagePattern(img));
                     gridPane.add(box, col, row);
                 }
             })
@@ -363,11 +370,18 @@ public class GUI extends Application
             {
                 if (hintsToggled)
                 {
-                    checkers[row][col].setStroke(Color.RED);
+                    ImageInput ii = new ImageInput();
+                    Image img = new Image("crown.png");
+                    ii.setSource(img);
+                    tiles[row][col].setEffect(ii);
+                    //tiles[row][col].setStyle("-fx-background-color: #4F8CA1; -fx-blend-mode: multiply;");
+//                    checkers[row][col].setStroke(Color.WHITE);
+//                    checkers[row][col].setStrokeWidth(2);
                 }
                 else
                 {
-                    checkers[row][col].setStroke(Color.WHITE);
+                    tiles[row][col].setStyle("-fx-background-color: #3D403D");
+//                    checkers[row][col].setStroke(null);
                 }
             }
         }
