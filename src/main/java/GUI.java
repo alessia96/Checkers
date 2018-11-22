@@ -254,7 +254,8 @@ public class GUI extends Application
                 {
                     Rectangle box = new Rectangle(70, 70);
                     Image img = new Image("wood.jpg");
-                    box.setFill(new ImagePattern(img));
+                    //box.setFill(new ImagePattern(img));
+                    box.setFill(Color.WHITE);
                     gridPane.add(box, col, row);
                 }
             })
