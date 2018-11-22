@@ -162,7 +162,13 @@ public class Board
 
         grid[move.getSource().getRow()][move.getSource().getColumn()].emptyCell();
 
-        if (capturingMove)
+        if ((move.getSource().getColour() == Checker.Colour.BLACK && move.getTarget().getRow() == grid.length - 1)
+            || (move.getSource().getColour() == Checker.Colour.WHITE && move.getTarget().getRow() == 0))
+        {
+            crownKing(move.getTarget().getChecker());
+        }
+
+        if (capturingMove && checkerInBetween != null)
         {
             if (!isTest)
             {
@@ -171,13 +177,7 @@ public class Board
 
             checkerInBetween.getCell().emptyCell();
             checkerInBetween = null;
-            capturingMove = false;
-        }
-
-        if ((move.getSource().getColour() == Checker.Colour.BLACK && move.getTarget().getRow() == grid.length - 1)
-            || (move.getSource().getColour() == Checker.Colour.WHITE && move.getTarget().getRow() == 0))
-        {
-            crownKing(move.getTarget().getChecker());
+            //capturingMove = false;
         }
 
         if (!isTest)
@@ -270,6 +270,16 @@ public class Board
             return true;
         }
         return false;
+    }
+
+    public boolean wasCapturingMove()
+    {
+        return capturingMove;
+    }
+
+    public void resetCapturingMove()
+    {
+        capturingMove = false;
     }
 
     public boolean isCheckerInBetween(Move move)
@@ -580,5 +590,37 @@ public class Board
     public void crownKing(Checker checker)
     {
         checker.setKing();
+    }
+
+    public boolean isCaptureAvailable()
+    {
+        List<Checker> allMovableCheckers = getMovableCheckers(CheckersGame.Player.HUMAN);
+        Cell source, target;
+        Move testMove;
+
+        for (int i = 0; i < allMovableCheckers.size(); i++)
+        {
+            source = getCellAt(allMovableCheckers.get(i).getRow(), allMovableCheckers.get(i).getColumn());
+
+            for (int row = 0; row < getGrid().length; row++)
+            {
+                for (int col = 0; col < getGrid().length; col++)
+                {
+                    if (!getCellAt(row, col).isOccupied())
+                    {
+                        target = getCellAt(row, col);
+
+                        testMove = new Move(source.getChecker(), target);
+
+                        if (isMoveValid(testMove) && canCapture(source, CheckersGame.Player.HUMAN))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

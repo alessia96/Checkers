@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class AIController
 {
@@ -28,6 +27,12 @@ public class AIController
             seCount = 0;
             pCount = 0;
             minimax(0, CheckersGame.Player.AI, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+            if (board.wasCapturingMove())
+            {
+                minimax(0, CheckersGame.Player.AI, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                board.resetCapturingMove();
+            }
 
             int best = -1;
             int MAX = -100;
@@ -103,7 +108,7 @@ public class AIController
             board.fillWithExistingCheckers(allCheckers);
             if (move.capturedChecker != null) move.capturedChecker.getCell().emptyCell();
 
-            if(alpha >= beta)
+            if (alpha >= beta)
             {
                 pCount++;
                 break;
@@ -115,6 +120,6 @@ public class AIController
 
     public void updateBoard(Board board)
     {
-        this.board = board;
+        //this.board = board;
     }
 }

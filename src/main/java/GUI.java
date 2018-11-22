@@ -71,20 +71,12 @@ public class GUI extends Application
     {
         Move move = null;
         boolean getNewMove = false;
+        board.resetCapturingMove();
 
         if (match.getTurn() == CheckersGame.Player.AI)
         {
-            match.getAIController().updateBoard(board);
+            //match.getAIController().updateBoard(board);
             move = match.getAIController().getAIMove(selectedDifficulty);
-
-            /*System.out.println("seCount " + match.getAIController().seCount + ", deCount " + match.getAIController().deCount +
-                    ", pCount " + match.getAIController().pCount);
-            for (MovesAndScores mas : match.getAIController().successorEvaluations)
-            {
-                System.out.println("Move: " + mas.getMove().getSource().getRow() + " "
-                        + mas.getMove().getSource().getColumn() + " to " + mas.getMove().getTarget().getRow() + " " +
-                        mas.getMove().getTarget().getColumn() + ", scores " + mas.getScore());
-            }*/
 
             boolean valid = false;
             List<Move> states = board.getAvailableStates(match.getTurn());
@@ -122,9 +114,14 @@ public class GUI extends Application
 
             if (valid)
             {
-                board.makeMove(move, false);
                 movesLog.setText("Black moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
-                    "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]\n" + movesLog.getText());
+                        "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]\n" + movesLog.getText());
+                board.makeMove(move, false);
+                if (board.wasCapturingMove() && board.isCaptureAvailable())
+                {
+                    match.setTurn(CheckersGame.Player.HUMAN);
+
+                }
                 getNewMove = true;
             }
             else
