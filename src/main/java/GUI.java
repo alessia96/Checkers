@@ -1,35 +1,24 @@
 import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.effect.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import jfxtras.labs.util.event.MouseControlUtil;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import javafx.scene.image.Image;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -39,6 +28,7 @@ public class GUI extends Application
     private static Board board;
 
     private BorderPane root;
+    private Scene scene;
     private GridPane gridPane;
     private BorderPane infoPane;
 
@@ -53,8 +43,6 @@ public class GUI extends Application
     private boolean shownOnce;
     private Label blacksCaptured, whitesCaptured;
 
-    private Move lastUserMove;
-
     @Override
     public void start(Stage primaryStage)
     {
@@ -68,7 +56,7 @@ public class GUI extends Application
         root.setLeft(gridPane);
         root.setRight(infoPane);
 
-        Scene scene = new Scene(root);
+        scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/css/checkerfx.css").toExternalForm());
 
         // setting up stage
@@ -136,7 +124,6 @@ public class GUI extends Application
             if (valid)
             {
                 board.makeMove(move, false);
-                lastUserMove = move;
                 movesLog.setText("Black moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
                     "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]\n" + movesLog.getText());
                 getNewMove = true;
@@ -190,8 +177,7 @@ public class GUI extends Application
                 if (board.getCellAt(row, col).isBlack())
                 {
                     tiles[row][col] = new Pane();
-                    tiles[row][col].setStyle("-fx-background-color: black");
-                    //tiles[row][col].setStyle("-fx-background-image: url('\"black_tile.png\"')");
+                    tiles[row][col].setStyle("-fx-background-color: #181818");
 
                     if (board.getCellAt(row, col).isOccupied())
                     {
@@ -253,8 +239,6 @@ public class GUI extends Application
                 if (!board.getCellAt(row, col).isBlack())
                 {
                     Rectangle box = new Rectangle(70, 70);
-                    Image img = new Image("wood.jpg");
-                    //box.setFill(new ImagePattern(img));
                     box.setFill(Color.WHITE);
                     gridPane.add(box, col, row);
                 }
@@ -277,7 +261,7 @@ public class GUI extends Application
         movesLog.setEditable(false);
         Separator separator = new Separator();
         separator.setPadding(new Insets(15, 10, 10, 10));
-        movesLogPane.getChildren().addAll(movesLogLabel, movesLog, separator);
+        movesLogPane.getChildren().addAll(movesLogLabel, new Label(" "), movesLog, separator);
 
         VBox bottomPane = new VBox();
         bottomPane.setPadding(new Insets(0, 10, 10, 10));
@@ -288,6 +272,8 @@ public class GUI extends Application
         infoPane.setTop(topPane);
         infoPane.setCenter(movesLogPane);
         infoPane.setBottom(bottomPane);
+
+        root.setRight(infoPane);
     }
 
     private GridPane topInfoPane()
@@ -371,18 +357,11 @@ public class GUI extends Application
             {
                 if (hintsToggled)
                 {
-                    ImageInput ii = new ImageInput();
-                    Image img = new Image("crown.png");
-                    ii.setSource(img);
-                    tiles[row][col].setEffect(ii);
-                    //tiles[row][col].setStyle("-fx-background-color: #4F8CA1; -fx-blend-mode: multiply;");
-//                    checkers[row][col].setStroke(Color.WHITE);
-//                    checkers[row][col].setStrokeWidth(2);
+                    tiles[row][col].setStyle("-fx-background-color: #2F4F4F");
                 }
                 else
                 {
-                    tiles[row][col].setStyle("-fx-background-color: #3D403D");
-//                    checkers[row][col].setStroke(null);
+                    tiles[row][col].setStyle("-fx-background-color: #181818");
                 }
             }
         }

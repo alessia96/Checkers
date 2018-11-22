@@ -7,12 +7,13 @@ public class Checker
     private Board board;
     private boolean isKing;
 
-    public Checker(Board board, Colour colour, int row, int column)
+    public Checker(Board board, Colour colour, int row, int column, boolean isKing)
     {
         this.board = board;
         this.colour = colour;
         currentRow = row;
         currentCol = column;
+        this.isKing = isKing;
     }
 
     public Colour getColour()
