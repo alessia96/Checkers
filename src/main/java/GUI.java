@@ -18,7 +18,11 @@ import jfxtras.labs.util.event.MouseControlUtil;
 
 import java.awt.*;
 import javafx.scene.image.Image;
+import org.reactfx.util.FxTimer;
+import org.reactfx.util.Timer;
+
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -126,6 +130,8 @@ public class GUI extends Application
             }
             else
             {
+                checkers[move.getSource().getRow()][move.getSource().getColumn()].setVisible(false);
+
                 if (board.isSourceSameAsTarget(move))
                 {
                     movesLog.setText("Move not valid: target tile cannot be source tile.\n" + movesLog.getText());
@@ -157,7 +163,8 @@ public class GUI extends Application
             if (getNewMove)
             {
                 getNewMove = false;
-                getMove();
+                Runnable getMoveTask = () -> { getMove(); };
+                FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
             }
         }
     }
@@ -166,6 +173,18 @@ public class GUI extends Application
     {
         if (checkers == null) checkers = new Circle[board.getGrid().length][board.getGrid().length];
         if (tiles == null) tiles = new Pane[board.getGrid().length][board.getGrid().length];
+
+        IntStream.range(0, 8).forEach((row) ->
+            IntStream.range(0, 8).forEach((col) ->
+            {
+                if (!board.getCellAt(row, col).isBlack())
+                {
+                    Rectangle box = new Rectangle(70, 70);
+                    box.setFill(Color.WHITE);
+                    gridPane.add(box, col, row);
+                }
+            }
+        ));
 
         IntStream.range(0, 8).forEach((row) ->
             IntStream.range(0, 8).forEach((col) ->
@@ -221,7 +240,8 @@ public class GUI extends Application
                         tiles[row][col].setMaxSize(70, 70);
                         tiles[row][col].getChildren().addAll(checkers[row][col]);
 
-                        if (hintsToggled) {
+                        if (hintsToggled)
+                        {
                             showHints();
                         }
                     }
@@ -231,17 +251,8 @@ public class GUI extends Application
 
                     gridPane.add(tiles[row][col], col, row);
                 }
-
-                if (!board.getCellAt(row, col).isBlack())
-                {
-                    Rectangle box = new Rectangle(70, 70);
-                    box.setFill(Color.WHITE);
-                    gridPane.add(box, col, row);
-                }
-            })
-        );
-
-        generateInfoPane();
+            }
+        ));
     }
 
     private void generateInfoPane()

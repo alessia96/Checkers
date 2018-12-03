@@ -30,8 +30,8 @@ public class AIController
 
             if (board.wasCapturingMove())
             {
-                minimax(0, CheckersGame.Player.AI, Integer.MIN_VALUE, Integer.MAX_VALUE);
                 board.resetCapturingMove();
+                minimax(0, CheckersGame.Player.AI, Integer.MIN_VALUE, Integer.MAX_VALUE);
             }
 
             int best = -1;
