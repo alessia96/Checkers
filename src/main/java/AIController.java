@@ -1,18 +1,44 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Ai controller.
+ */
 public class AIController
 {
     private Board board;
+    /**
+     * The Successor evaluations.
+     */
     public List<MovesAndScores> successorEvaluations;
-    public int seCount, deCount, pCount;
+    /**
+     * The Se count.
+     */
+    public int seCount, /**
+ * The De count.
+ */
+deCount, /**
+ * The P count.
+ */
+pCount;
     private int maxDepth;
 
+    /**
+     * Instantiates a new Ai controller.
+     *
+     * @param board the board
+     */
     public AIController(Board board)
     {
         this.board = board;
     }
 
+    /**
+     * Gets ai move.
+     *
+     * @param difficulty the difficulty
+     * @return the ai move
+     */
     public Move getAIMove(int difficulty)
     {
         if (difficulty == 0)
@@ -38,6 +64,7 @@ public class AIController
             int MAX = -100;
             for (int i = 0; i < successorEvaluations.size(); i++)
             {
+                //System.out.println("Move " + successorEvaluations.get(i).getMove() + ", score " + successorEvaluations.get(i).getScore());
                 if (MAX < successorEvaluations.get(i).getScore())
                 {
                     MAX = successorEvaluations.get(i).getScore();
@@ -45,10 +72,16 @@ public class AIController
                 }
             }
 
+            //System.out.println("Chosen " + successorEvaluations.get(best).getMove());
             return successorEvaluations.get(best).getMove();
         }
     }
 
+    /**
+     * Getter for property 'randomMove'.
+     *
+     * @return Value for property 'randomMove'.
+     */
     private Move getRandomMove()
     {
         List<Move> movesAvailable = board.getAvailableStates(CheckersGame.Player.AI);
@@ -56,6 +89,15 @@ public class AIController
         return movesAvailable.get(random);
     }
 
+    /**
+     * Minimax int.
+     *
+     * @param depth  the depth
+     * @param player the player
+     * @param alpha  the alpha
+     * @param beta   the beta
+     * @return the int
+     */
     public int minimax(int depth, CheckersGame.Player player, int alpha, int beta)
     {
         int bestScore = 0;
@@ -118,6 +160,11 @@ public class AIController
         return bestScore;
     }
 
+    /**
+     * Update board.
+     *
+     * @param board the board
+     */
     public void updateBoard(Board board)
     {
         //this.board = board;

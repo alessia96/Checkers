@@ -1,6 +1,9 @@
 import javafx.geometry.Bounds;
 import javafx.scene.shape.Circle;
 
+/**
+ * The type User controller.
+ */
 public class UserController
 {
     private Board board;
@@ -10,21 +13,42 @@ public class UserController
 
     private Move userMove;
 
+    /**
+     * Instantiates a new User controller.
+     *
+     * @param board the board
+     */
     public UserController(Board board)
     {
         this.board = board;
     }
 
+    /**
+     * Getter for property 'userMove'.
+     *
+     * @return Value for property 'userMove'.
+     */
     public Move getUserMove()
     {
         return userMove;
     }
 
+    /**
+     * On checker pressed.
+     *
+     * @param row the row
+     * @param col the col
+     */
     public void onCheckerPressed(int row, int col)
     {
         source = board.getCellAt(row, col).getChecker();
     }
 
+    /**
+     * On checker released.
+     *
+     * @param checker the checker
+     */
     public void onCheckerReleased(Circle checker)
     {
         Bounds boundsInScene = checker.localToScene(checker.getBoundsInLocal());
