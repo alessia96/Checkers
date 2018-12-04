@@ -1,0 +1,12 @@
+CheckersGame.class
+Board.class
+UserController.class
+BoardTest.class
+Checker$Colour.class
+MovesAndScores.class
+Checker.class
+GUI.class
+CheckersGame$Player.class
+AIController.class
+Tile.class
+Move.class
