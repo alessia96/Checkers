@@ -2,21 +2,19 @@ import javafx.geometry.Bounds;
 import javafx.scene.shape.Circle;
 
 /**
- * The type User controller.
+ * The UserController class controls the handling of new user moves.
  */
 public class UserController
 {
     private Board board;
-
     private Checker source;
-    private Cell target;
-
+    private Tile target;
     private Move userMove;
 
     /**
-     * Instantiates a new User controller.
+     * Instantiates a new UserController object.
      *
-     * @param board the board
+     * @param board the board linked to the controller.
      */
     public UserController(Board board)
     {
@@ -24,9 +22,9 @@ public class UserController
     }
 
     /**
-     * Getter for property 'userMove'.
+     * Getter for the user move.
      *
-     * @return Value for property 'userMove'.
+     * @return the user move.
      */
     public Move getUserMove()
     {
@@ -34,33 +32,44 @@ public class UserController
     }
 
     /**
-     * On checker pressed.
+     * Event for a checker being pressed in the GUI.
      *
-     * @param row the row
-     * @param col the col
+     * @param row the row at which the checker is pressed.
+     * @param col the column at which the checker is pressed.
      */
     public void onCheckerPressed(int row, int col)
     {
-        source = board.getCellAt(row, col).getChecker();
+        // information about the source are stored in the class
+        source = board.getTileAt(row, col).getChecker();
     }
 
     /**
-     * On checker released.
+     * Event for a checker being released in the GUI.
      *
-     * @param checker the checker
+     * @param checker the checker being released.
      */
     public void onCheckerReleased(Circle checker)
     {
+        // information about the position in the scene where the checker was released are computed
         Bounds boundsInScene = checker.localToScene(checker.getBoundsInLocal());
         double worldX = boundsInScene.getMaxY() - 35;
         double worldY = boundsInScene.getMaxX() - 35;
 
+        // target location is calculated from scene coordinates
         target = getPaneLandedAt(worldX, worldY);
 
+        // user move is saved as a new move between previously source and target
         userMove = new Move(source, target);
     }
 
-    private Cell getPaneLandedAt(double worldX, double worldY)
+    /**
+     * Computes what tile is at coordinates worldX and worldY.
+     *
+     * @param worldX value of X in scene coordinates.
+     * @param worldY value of Y in scene coordinates.
+     * @return Tile the exact tile corresponding to the given inputs.
+     */
+    private Tile getPaneLandedAt(double worldX, double worldY)
     {
         int xIndex = (int) Math.floor(worldX / 70);
         int yIndex = (int) Math.floor(worldY / 70);
@@ -71,6 +80,6 @@ public class UserController
             yIndex = source.getColumn();
         }
 
-        return board.getCellAt(xIndex, yIndex);
+        return board.getTileAt(xIndex, yIndex);
     }
 }

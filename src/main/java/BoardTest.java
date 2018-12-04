@@ -10,43 +10,43 @@ public class BoardTest
     public void getCheckersTest()
     {
         Board board = new Board(new CheckersGame());
-        assert(board.getCheckers(true).size() == 12);
+        assert(board.getCheckers(Checker.Colour.BLACK).size() == 12);
     }
 
     @Test
     public void makeMoveTest()
     {
         Board board = new Board(new CheckersGame());
-        Checker source = board.getCellAt(5, 0).getChecker();
-        Cell target = board.getCellAt(4, 1);
+        Checker source = board.getTileAt(5, 0).getChecker();
+        Tile target = board.getTileAt(4, 1);
         Move move = new Move(source, target);
         board.makeMove(move, false);
-        assertFalse(board.getCellAt(5, 0).isOccupied());
-        assertTrue(board.getCellAt(4, 1).isOccupied());
+        assertFalse(board.getTileAt(5, 0).isOccupied());
+        assertTrue(board.getTileAt(4, 1).isOccupied());
     }
 
     @Test
     public void captureMoveTest()
     {
         Board board = new Board(new CheckersGame());
-        Checker source = board.getCellAt(5, 0).getChecker();
-        Cell target = board.getCellAt(4, 1);
+        Checker source = board.getTileAt(5, 0).getChecker();
+        Tile target = board.getTileAt(4, 1);
         Move move = new Move(source, target);
         board.makeMove(move, false);
 
-        source = board.getCellAt(2, 3).getChecker();
-        target = board.getCellAt(3, 2);
+        source = board.getTileAt(2, 3).getChecker();
+        target = board.getTileAt(3, 2);
         move = new Move(source, target);
         board.makeMove(move, false);
 
-        source = board.getCellAt(4, 1).getChecker();
-        target = board.getCellAt(2, 3);
+        source = board.getTileAt(4, 1).getChecker();
+        target = board.getTileAt(2, 3);
         move = new Move(source, target);
         board.makeMove(move, false);
 
-        assertFalse(board.getCellAt(4, 1).isOccupied());
-        assertFalse(board.getCellAt(3, 2).isOccupied());
-        assertTrue(board.getCellAt(2, 3).isOccupied());
+        assertFalse(board.getTileAt(4, 1).isOccupied());
+        assertFalse(board.getTileAt(3, 2).isOccupied());
+        assertTrue(board.getTileAt(2, 3).isOccupied());
         assertNotNull(board.getCheckerInBetween());
     }
 }

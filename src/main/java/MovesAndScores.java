@@ -1,5 +1,7 @@
 /**
- * The type Moves and scores.
+ * The MovesAndScores class represents a data structure
+ * containing information about each move and its corresponding score.
+ * Used in minimax.
  */
 public class MovesAndScores
 {
@@ -7,10 +9,10 @@ public class MovesAndScores
     private int score;
 
     /**
-     * Instantiates a new Moves and scores.
+     * Instantiates a new MovesAndScores object.
      *
-     * @param move  the move
-     * @param score the score
+     * @param move  the move.
+     * @param score the score of the move.
      */
     public MovesAndScores(Move move, int score)
     {
@@ -19,16 +21,16 @@ public class MovesAndScores
     }
 
     /**
-     * Getter for property 'move'.
+     * Getter for the move.
      *
-     * @return Value for property 'move'.
+     * @return the move.
      */
     public Move getMove() { return move; }
 
     /**
-     * Getter for property 'score'.
+     * Getter for the score.
      *
-     * @return Value for property 'score'.
+     * @return the score.
      */
     public int getScore() { return score; }
 }

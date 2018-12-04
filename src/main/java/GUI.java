@@ -26,8 +26,14 @@ import java.util.stream.IntStream;
 
 /**
  * The Class GUI is used to visually represent the software.
+ * It includes a board representation that gets displayed on the screen and a full graphical board display.
+ * GUI updates the display after any completed move made by the User and the AI, with appropriate pauses to show
+ * intermediate states in multi-step moves.
+ * GUI is fully interactive, with mechanics of drag & drop of each checker.
+ * Though GUI, users can access the rules of the games via a corresponding button opening a pop-up window.
+ * GUI contains a help facility which provides hints about available moves, given the current game state.
  *
- * @author Alessia Nigretti
+ * @author CandNo. 149112
  */
 public class GUI extends Application
 {
@@ -53,8 +59,10 @@ public class GUI extends Application
     private Label blacksCaptured, redsCaptured;
 
     /**
-     *
-     *
+     * Handles initialisation of scene and panes in the primary stage.
+     * Sets checkers to currently be draggable.
+     * Handles generation of grid and info pane.
+     * Sets stylesheets for scene.
      * */
     @Override
     public void start(Stage primaryStage)
@@ -63,17 +71,21 @@ public class GUI extends Application
         gridPane = new GridPane();
         infoPane = new BorderPane();
 
+        // provide users with interactivity with the checkers
         currentlyDraggable = true;
+
+        // fill up gridPane and infoPane
         generateGrid();
         generateInfoPane();
 
         root.setLeft(gridPane);
         root.setRight(infoPane);
 
+        // set up scene and stylesheet for the scene
         scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/css/checkerfx.css").toExternalForm());
 
-        // setting up stage
+        // set up stage
         primaryStage.setResizable(false);
         primaryStage.sizeToScene();
         primaryStage.setTitle("Checkers");
@@ -81,17 +93,21 @@ public class GUI extends Application
         primaryStage.show();
     }
 
-
+    /**
+     * Generates a new move depending on current turn in the match, by using the
+     * successor function to validate user and AI moves.
+     * Handles switching of currentlyDraggable variable for checkers interactivity.
+     * */
     private void getMove()
     {
         Move move;
+        // switch to allow a new move to be made
         boolean getNewMove = false;
-        board.resetCapturingMove();
+        boolean hasJustCaptured = false;
 
         if (match.getTurn() == CheckersGame.Player.AI)
         {
-            try
-            {
+                match.getAIController().updateBoard(board);
                 move = match.getAIController().getAIMove(selectedDifficulty);
 
                 boolean valid = false;
@@ -104,32 +120,89 @@ public class GUI extends Application
                         valid = true;
                     }
                 }
+                //board.resetCheckerInBetween();
 
                 if (valid)
                 {
-                    movesLog.setText("White moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
+                    movesLog.setText("Red moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
                             "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
                             "\n" + movesLog.getText());
-                    board.makeMove(move, false);
-                    currentlyDraggable = true;
+                    if (board.makeMove(move, false))
+                    {
+                        hasJustCaptured = true;
+                    }
+
+                    // keep turn to be human turn if capture was made and another capture is available
+                    if (hasJustCaptured && board.canCheckerCapture(move.getTarget().getChecker(), CheckersGame.Player.AI))
+                    {
+                        match.setTurn(CheckersGame.Player.AI);
+                        getNewMove = true;
+                    }
+                    else
+                    {
+                        currentlyDraggable = true;
+                    }
                     generateGrid();
                 }
 
                 gameFinishedCheck();
-            }
-            catch(Exception e)
-            {
-                //
-            }
+
+                if (getNewMove)
+                {
+                    getNewMove = false;
+                    // delay of 0.5 seconds and get a new move from the AI
+                    Runnable getMoveTask = () -> { getMove(); };
+                    FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
+                }
+
+                /*// pass current user-selected difficulty to get an appropriate AI move
+                move = match.getAIController().getAIMove(selectedDifficulty);
+
+                // update info pane
+                movesLog.setText("Red moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
+                        "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
+                        "\n" + movesLog.getText());
+
+                // request move from the board
+                board.makeMove(move, false);
+
+                // keep turn to be AI turn if capture was made and another capture is available
+                if (board.wasCapturingMove() && board.canCapture(move.getTarget(), CheckersGame.Player.AI))
+                {
+                    match.setTurn(CheckersGame.Player.AI);
+                    //getNewMove = true;
+                }
+                else
+                {
+                    // allow player to interact
+                    currentlyDraggable = true;
+                }
+
+                generateGrid();
+
+                // check for game to be finished to throw respective information alerts
+                gameFinishedCheck();
+
+                if (getNewMove)
+                {
+                    getNewMove = false;
+                    // delay of 0.5 seconds and get a new move from the AI
+                    Runnable getMoveTask = () -> { getMove(); };
+                    FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
+                }*/
         }
         else if (match.getTurn() == CheckersGame.Player.HUMAN)
         {
+            // get user move from user controller
             move = match.getUserController().getUserMove();
             boolean valid = false;
+
+            // use successor function to validate user moves
             List<Move> states = board.getAvailableStates(match.getTurn());
 
             for (Move m : states)
             {
+                // check user move against available moves
                 if (m.getSource() == move.getSource() && m.getTarget() == move.getTarget())
                 {
                     valid = true;
@@ -140,24 +213,33 @@ public class GUI extends Application
             {
                 movesLog.setText("Black moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
                         "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]\n" + movesLog.getText());
-                board.makeMove(move, false);
-                if (board.wasCapturingMove() && board.isCaptureAvailable())
+
+                // request board to make move
+                if (board.makeMove(move, false))
+                {
+                    hasJustCaptured = true;
+                }
+
+                // keep turn to be human turn if capture was made and another capture is available
+                if (hasJustCaptured && board.canCheckerCapture(move.getTarget().getChecker(), CheckersGame.Player.HUMAN))
                 {
                     match.setTurn(CheckersGame.Player.HUMAN);
                 }
                 else
                 {
+                    // allow player to interact
                     currentlyDraggable = false;
+                    getNewMove = true;
                 }
-                getNewMove = true;
             }
+            // if move is not valid, display why
             else
             {
                 if (board.isSourceSameAsTarget(move))
                 {
                     movesLog.setText("Move not valid: target tile cannot be source tile.\n" + movesLog.getText());
                 }
-                else if (board.isTargetRed(move))
+                else if (board.isTargetWhite(move))
                 {
                     movesLog.setText("Move not valid: target tile cannot be a white tile.\n" + movesLog.getText());
                 }
@@ -179,6 +261,7 @@ public class GUI extends Application
                 }
             }
 
+            // set checker invisible (for cases in which it falls outside of the grid)
             checkers[move.getSource().getRow()][move.getSource().getColumn()].setVisible(false);
 
             generateGrid();
@@ -188,19 +271,30 @@ public class GUI extends Application
                 getNewMove = false;
                 if (!gameFinishedCheck())
                 {
+                    // delay of 0.5 seconds and get a new move from the AI
                     Runnable getMoveTask = () -> { getMove(); };
                     FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
                 }
             }
         }
 
-        blacksCaptured.setText("Blacks Captured: " + (12 - match.getBoard().getCheckers(true).size()));
-        redsCaptured.setText("Reds Captured: " + (12 - match.getBoard().getCheckers(false).size()));
+        // update labels
+        blacksCaptured.setText("Blacks Captured: " + (12 - match.getBoard().getCheckers(Checker.Colour.BLACK).size()));
+        redsCaptured.setText("Reds Captured: " + (12 - match.getBoard().getCheckers(Checker.Colour.RED).size()));
     }
 
+    /**
+     * Checks if the game is finished. If it is, displays alert and returns true.
+     *
+     * @return true if the game is finished, false otherwise.
+     * */
     private boolean gameFinishedCheck()
     {
-        if (match.getBoard().getCheckers(true).size() == 0) // blacks are finished
+        // use successor function to check if there are moves available
+        List<Move> movesAvailable = board.getAvailableStates(match.getTurn());
+
+        // check if any move is available for the human player
+        if (movesAvailable.isEmpty() && match.getTurn() == CheckersGame.Player.HUMAN) // blacks are finished
         {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "You lost.", ButtonType.CLOSE);
             alert.setTitle("Defeat");
@@ -210,7 +304,8 @@ public class GUI extends Application
             generateGrid();
             return true;
         }
-        else if (match.getBoard().getCheckers(false).size() == 0)   // reds are finished
+        // check if any move is available for the AI player
+        else if (movesAvailable.isEmpty() && match.getTurn() == CheckersGame.Player.AI)   // reds are finished
         {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "You won.", ButtonType.CLOSE);
             alert.setTitle("Victory");
@@ -223,15 +318,20 @@ public class GUI extends Application
         return false;
     }
 
+    /**
+     * Generates a grid that displays all checkers and tiles.
+     * Adds action listeners to checkers.
+     * */
     private void generateGrid()
     {
         if (checkers == null) checkers = new Circle[board.getGrid().length][board.getGrid().length];
         if (tiles == null) tiles = new Pane[board.getGrid().length][board.getGrid().length];
 
+        // add white tiles to the gridPane
         IntStream.range(0, 8).forEach((row) ->
             IntStream.range(0, 8).forEach((col) ->
             {
-                if (!board.getCellAt(row, col).isBlack())
+                if (!board.getTileAt(row, col).isBlack())
                 {
                     Rectangle box = new Rectangle(70, 70);
                     box.setFill(Color.WHITE);
@@ -243,19 +343,21 @@ public class GUI extends Application
         IntStream.range(0, 8).forEach((row) ->
             IntStream.range(0, 8).forEach((col) ->
             {
-                if (board.getCellAt(row, col).isBlack())
+                if (board.getTileAt(row, col).isBlack())
                 {
+                    // add black tiles to the pane
                     tiles[row][col] = new Pane();
                     tiles[row][col].setStyle("-fx-background-color: #181818");
 
-                    if (board.getCellAt(row, col).isOccupied())
+                    if (board.getTileAt(row, col).isOccupied())
                     {
+                        // add circles to represent checkers
                         checkers[row][col] = new Circle(37, 35, 30);
 
                         Image img;
-                        if (board.getCellAt(row, col).getChecker().getColour() == Checker.Colour.RED)
+                        if (board.getTileAt(row, col).getChecker().getColour() == Checker.Colour.RED)
                         {
-                            if (board.getCellAt(row, col).getChecker().isKing())
+                            if (board.getTileAt(row, col).getChecker().isKing())
                             {
                                 img = new Image("red_king.png");
                             }
@@ -268,7 +370,7 @@ public class GUI extends Application
                         }
                         else
                         {
-                            if (board.getCellAt(row, col).getChecker().isKing())
+                            if (board.getTileAt(row, col).getChecker().isKing())
                             {
                                 img = new Image("black_king.png");
                             }
@@ -279,12 +381,15 @@ public class GUI extends Application
 
                             checkers[row][col].setFill(new ImagePattern(img));
 
+                            // if player is allowed interaction, make checkers draggable
                             if (currentlyDraggable)
                                 MouseControlUtil.makeDraggable(checkers[row][col]);
 
+                            // add event handler for mouse pressed to record source
                             checkers[row][col].addEventHandler(MouseEvent.MOUSE_PRESSED, event ->
                                     match.getUserController().onCheckerPressed(row, col));
 
+                            // add event handler for mouse released to record target and get new move
                             checkers[row][col].addEventHandler(MouseEvent.MOUSE_RELEASED, event ->
                             {
                                 match.getUserController().onCheckerReleased(checkers[row][col]);
@@ -307,6 +412,11 @@ public class GUI extends Application
         ));
     }
 
+    /**
+     * Generates side pane containing information about the game state
+     * (log of the moves made, checkers captured, current difficulty, hints toggled)
+     * and commands to start a new game or read game rules.
+     * */
     private void generateInfoPane()
     {
         GridPane topPane = topInfoPane();
@@ -324,8 +434,8 @@ public class GUI extends Application
 
         VBox bottomPane = new VBox();
         bottomPane.setPadding(new Insets(0, 10, 10, 10));
-        blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckers(true).size()));
-        redsCaptured = new Label("Reds Captured: " + (12 - match.getBoard().getCheckers(false).size()));
+        blacksCaptured = new Label("Blacks Captured: " + (12 - match.getBoard().getCheckers(Checker.Colour.BLACK).size()));
+        redsCaptured = new Label("Reds Captured: " + (12 - match.getBoard().getCheckers(Checker.Colour.RED).size()));
         bottomPane.getChildren().addAll(blacksCaptured, redsCaptured);
 
         infoPane.setTop(topPane);
@@ -335,6 +445,15 @@ public class GUI extends Application
         root.setRight(infoPane);
     }
 
+    /**
+     * Creates top part of the information pane, containing buttons to
+     * start a new game and read the rules, checkbox to toggle hints,
+     * and slider to set the game difficulty.
+     * Adds a button listener to each button and handles clearing the current game and
+     * opening a new window containing the game rules.
+     *
+     * @return topInfoPane.
+     * */
     private GridPane topInfoPane()
     {
         GridPane pane = new GridPane();
@@ -398,6 +517,9 @@ public class GUI extends Application
         return pane;
     }
 
+    /**
+     * Opens a new stage containing the rules of the game.
+     * */
     private void openRulesWindow()
     {
         // creating new window for rules
@@ -447,7 +569,7 @@ public class GUI extends Application
         rulesDescriptionPane.setContent(description);
         rulesPane.setCenter(rulesDescriptionPane);
 
-        // setting up and styling scene for rules window
+        // set up and style scene for rules window
         Scene rulesScene = new Scene(rulesPane);
         rulesScene.getStylesheets().add(getClass().getResource("/css/checkerfx.css").toExternalForm());
 
@@ -457,14 +579,19 @@ public class GUI extends Application
         rulesWindow.show();
     }
 
+    /**
+     * Toggles hints.
+     * */
     private void showHints()
     {
+        // get all movable checkers
         List<Checker> movableUserCheckers = board.getMovableCheckers(CheckersGame.Player.HUMAN);
 
         for (int i = 0; i < movableUserCheckers.size(); i++) {
             int row = movableUserCheckers.get(i).getRow();
             int col = movableUserCheckers.get(i).getColumn();
 
+            // change colour of tiles containing movable checkers
             if (checkers[row][col] != null)
             {
                 if (hintsToggled)

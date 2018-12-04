@@ -1,20 +1,10 @@
 /**
- * The type Checker.
+ * The Checker class represents the checker object and describes its
+ * characteristics, such as colour, row, column and whether it is a king or not.
  */
 public class Checker
 {
-    /**
-     * The enum Colour.
-     */
-    public enum Colour {
-        /**
-         * Black colour.
-         */
-        BLACK,
-        /**
-         * Red colour.
-         */
-        RED }
+    public enum Colour { BLACK, RED }
     private Colour colour;
     private int currentRow;
     private int currentCol;
@@ -28,7 +18,7 @@ public class Checker
      * @param colour the colour
      * @param row    the row
      * @param column the column
-     * @param isKing the is king
+     * @param isKing whether the checker is king or not
      */
     public Checker(Board board, Colour colour, int row, int column, boolean isKing)
     {
@@ -40,9 +30,9 @@ public class Checker
     }
 
     /**
-     * Getter for property 'colour'.
+     * Getter for the colour of the checker.
      *
-     * @return Value for property 'colour'.
+     * @return Checkers.Colour.BLACK if black, Checkers.Colour.RED if red.
      */
     public Colour getColour()
     {
@@ -50,9 +40,9 @@ public class Checker
     }
 
     /**
-     * Getter for property 'row'.
+     * Getter for the row.
      *
-     * @return Value for property 'row'.
+     * @return the row.
      */
     public int getRow()
     {
@@ -60,9 +50,9 @@ public class Checker
     }
 
     /**
-     * Getter for property 'column'.
+     * Getter for the column.
      *
-     * @return Value for property 'column'.
+     * @return the column.
      */
     public int getColumn()
     {
@@ -70,19 +60,19 @@ public class Checker
     }
 
     /**
-     * Getter for property 'cell'.
+     * Getter for the tile.
      *
-     * @return Value for property 'cell'.
+     * @return the tile.
      */
-    public Cell getCell()
+    public Tile getTile()
     {
-        return board.getCellAt(currentRow, currentCol);
+        return board.getTileAt(currentRow, currentCol);
     }
 
     /**
-     * Getter for property 'king'.
+     * Getter for whether the checker is a king.
      *
-     * @return Value for property 'king'.
+     * @return true if checker is king, false otherwise.
      */
     public boolean isKing()
     {
@@ -90,7 +80,7 @@ public class Checker
     }
 
     /**
-     * Sets king.
+     * Crowns the checker to king.
      */
     public void setKing()
     {

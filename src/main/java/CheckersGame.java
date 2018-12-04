@@ -1,5 +1,7 @@
 /**
- * The type Checkers game.
+ * The CheckersGame class represents a single game of checkers.
+ * Handles the relationships between a board and its User and AI controllers.
+ * Contains information on the current player.
  */
 public class CheckersGame
 {
@@ -7,22 +9,11 @@ public class CheckersGame
     private UserController userController;
     private AIController aiController;
 
-    /**
-     * The enum Player.
-     */
-    public enum Player {
-        /**
-         * Ai player.
-         */
-        AI,
-        /**
-         * Human player.
-         */
-        HUMAN }
+    public enum Player { AI, HUMAN }
     private Player turn;
 
     /**
-     * Constructs a new CheckersGame.
+     * Constructs a new CheckersGame object, giving the initial turn to the player.
      */
     public CheckersGame()
     {
@@ -33,9 +24,9 @@ public class CheckersGame
     }
 
     /**
-     * Setter for property 'turn'.
+     * Setter for the turn.
      *
-     * @param turn Value to set for property 'turn'.
+     * @param turn the turn to be set.
      */
     public void setTurn(Player turn)
     {
@@ -43,9 +34,9 @@ public class CheckersGame
     }
 
     /**
-     * Getter for property 'turn'.
+     * Getter for the turn.
      *
-     * @return Value for property 'turn'.
+     * @return the current turn.
      */
     public Player getTurn()
     {
@@ -53,9 +44,9 @@ public class CheckersGame
     }
 
     /**
-     * Getter for property 'board'.
+     * Getter for the board.
      *
-     * @return Value for property 'board'.
+     * @return the board associated with the game.
      */
     public Board getBoard()
     {
@@ -63,16 +54,16 @@ public class CheckersGame
     }
 
     /**
-     * Getter for property 'userController'.
+     * Getter for the user controller.
      *
-     * @return Value for property 'userController'.
+     * @return the user controller.
      */
     public UserController getUserController() { return userController; }
 
     /**
-     * Getter for property 'AIController'.
+     * Getter for the AI controller.
      *
-     * @return Value for property 'AIController'.
+     * @return the AI controller.
      */
     public AIController getAIController() { return aiController; }
 }
