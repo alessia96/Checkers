@@ -107,52 +107,50 @@ public class GUI extends Application
 
         if (match.getTurn() == CheckersGame.Player.AI)
         {
-                //match.getAIController().updateBoard(board);
-                move = match.getAIController().getAIMove(selectedDifficulty);
+            move = match.getAIController().getAIMove(selectedDifficulty);
 
-                boolean valid = false;
-                List<Move> states = board.getAvailableStates(match.getTurn());
+            boolean valid = false;
+            List<Move> states = board.getAvailableStates(match.getTurn());
 
-                for (Move m : states)
+            for (Move m : states)
+            {
+                if (m.getSource() == move.getSource() && m.getTarget() == move.getTarget())
                 {
-                    if (m.getSource() == move.getSource() && m.getTarget() == move.getTarget())
-                    {
-                        valid = true;
-                    }
+                    valid = true;
+                }
+            }
+
+            if (valid)
+            {
+                movesLog.setText("Red moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
+                        "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
+                        "\n" + movesLog.getText());
+                if (board.makeMove(move, false))
+                {
+                    hasJustCaptured = true;
                 }
 
-                if (valid)
+                // keep turn to be human turn if capture was made and another capture is available
+                if (hasJustCaptured && board.canCheckerCapture(move.getTarget().getChecker(), CheckersGame.Player.AI))
                 {
-                    movesLog.setText("Red moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
-                            "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
-                            "\n" + movesLog.getText());
-                    if (board.makeMove(move, false))
-                    {
-                        hasJustCaptured = true;
-                    }
-
-                    // keep turn to be human turn if capture was made and another capture is available
-                    if (hasJustCaptured && board.canCheckerCapture(move.getTarget().getChecker(), CheckersGame.Player.AI))
-                    {
-                        match.setTurn(CheckersGame.Player.AI);
-                        getNewMove = true;
-                    }
-                    else
-                    {
-                        currentlyDraggable = true;
-                    }
-                    generateGrid();
+                    match.setTurn(CheckersGame.Player.AI);
+                    getNewMove = true;
                 }
-
-                gameFinishedCheck();
-
-                if (getNewMove)
+                else
                 {
-                    getNewMove = false;
-                    // delay of 0.5 seconds and get a new move from the AI
-                    Runnable getMoveTask = () -> { getMove(); };
-                    FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
+                    currentlyDraggable = true;
                 }
+                generateGrid();
+            }
+
+            gameFinishedCheck();
+
+            if (getNewMove)
+            {
+                // delay of 0.5 seconds and get a new move from the AI
+                Runnable getMoveTask = () -> { getMove(); };
+                FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
+            }
         }
         else if (match.getTurn() == CheckersGame.Player.HUMAN)
         {
@@ -231,7 +229,6 @@ public class GUI extends Application
 
             if (getNewMove)
             {
-                getNewMove = false;
                 if (!gameFinishedCheck())
                 {
                     // delay of 0.5 seconds and get a new move from the AI
@@ -550,7 +547,8 @@ public class GUI extends Application
         // get all movable checkers
         List<Checker> movableUserCheckers = board.getMovableCheckers(CheckersGame.Player.HUMAN);
 
-        for (int i = 0; i < movableUserCheckers.size(); i++) {
+        for (int i = 0; i < movableUserCheckers.size(); i++)
+        {
             int row = movableUserCheckers.get(i).getRow();
             int col = movableUserCheckers.get(i).getColumn();
 

@@ -223,9 +223,11 @@ public class Board
      * Crowns a king if checker reaches opposite extremity of the board.
      * Records what checker is being captured, if capturing move.
      * Switches turn to opposite player.
+     * Returns whether the move was a capturing move or not.
      *
      * @param move   the move to be made.
      * @param isTest whether the move is being made as part of a minimax implementation.
+     * @return true if move was a capturing move, false otherwise.
      */
     public boolean makeMove(Move move, boolean isTest)
     {
@@ -546,6 +548,13 @@ public class Board
         else return movableCheckers;
     }
 
+    /**
+     * Checks if a specific checker can capture in a specific turn.
+     *
+     * @param checker the checker to be checked.
+     * @param turn the current turn.
+     * @return true if a checker can capture, false otherwise.
+     */
     public boolean canCheckerCapture(Checker checker, CheckersGame.Player turn)
     {
         List<Checker> checkersThatCanCapture = getCheckersThatCanCapture(turn);
@@ -561,6 +570,12 @@ public class Board
         return false;
     }
 
+    /**
+     * Gets all checkers that can capture.
+     *
+     * @param turn the current turn.
+     * @return all checkers that can capture another checker.
+     */
     public List<Checker> getCheckersThatCanCapture(CheckersGame.Player turn)
     {
         checkersThatCanCapture.clear();
@@ -824,6 +839,11 @@ public class Board
         checker.setKing();
     }
 
+    /**
+     * Heuristic function to evaluate the current board state.
+     *
+     * @return heuristic value of the current board state.
+     */
     public int getHeuristics()
     {
         int score = 0;

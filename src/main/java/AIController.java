@@ -177,9 +177,4 @@ public class AIController
 
         return bestScore;
     }
-
-    public void updateBoard(Board board)
-    {
-        this.board = board;
-    }
 }
