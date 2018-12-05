@@ -3,15 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="a008c71a-f31c-47b2-ae42-204a7b7351e2" name="Default Changelist" comment="Refactored valid moves">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/black_tile.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mirrorblack.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/white_tile.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/wood.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/black_tile.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/mirrorblack.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/white_tile.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/wood.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/AIController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/AIController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -22,14 +16,17 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/Checkers$GUI.ic" NAME="GUI Coverage Results" MODIFIED="1542743407024" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/Checkers$GUI.ic" NAME="GUI Coverage Results" MODIFIED="1544032161362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+  <component name="CoverageViewManager">
+    <option name="myElementSize" value="241" />
   </component>
   <component name="FUSProjectUsageTrigger">
     <session id="25223446">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="41" />
-          <entry key="project.open.time.1" value="2" />
+          <entry key="project.closed" value="42" />
+          <entry key="project.open.time.1" value="3" />
           <entry key="project.open.time.10" value="5" />
           <entry key="project.open.time.11" value="2" />
           <entry key="project.open.time.14" value="1" />
@@ -47,7 +44,7 @@
           <entry key="project.open.time.7" value="4" />
           <entry key="project.open.time.8" value="4" />
           <entry key="project.open.time.9" value="4" />
-          <entry key="project.opened" value="40" />
+          <entry key="project.opened" value="41" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -55,7 +52,7 @@
           <entry key="class" value="2" />
           <entry key="css" value="2" />
           <entry key="groovy" value="1" />
-          <entry key="java" value="92" />
+          <entry key="java" value="93" />
           <entry key="png" value="2" />
           <entry key="xml" value="6" />
         </counts>
@@ -66,7 +63,7 @@
           <entry key="CSS" value="2" />
           <entry key="Groovy" value="1" />
           <entry key="Image" value="2" />
-          <entry key="JAVA" value="92" />
+          <entry key="JAVA" value="93" />
           <entry key="PLAIN_TEXT" value="4" />
           <entry key="XML" value="2" />
         </counts>
@@ -76,7 +73,7 @@
           <entry key="css" value="941" />
           <entry key="dummy" value="7" />
           <entry key="groovy" value="210" />
-          <entry key="java" value="64210" />
+          <entry key="java" value="65179" />
           <entry key="txt" value="23" />
           <entry key="xml" value="194" />
         </counts>
@@ -85,7 +82,7 @@
         <counts>
           <entry key="CSS" value="941" />
           <entry key="Groovy" value="210" />
-          <entry key="JAVA" value="64210" />
+          <entry key="JAVA" value="65179" />
           <entry key="PLAIN_TEXT" value="224" />
         </counts>
       </usages-collector>
@@ -96,8 +93,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/GUI.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="386" lean-forward="true" selection-start-line="386" selection-end-line="386" />
+            <state relative-caret-position="-7096">
+              <caret line="121" column="17" selection-start-line="121" selection-start-column="17" selection-end-line="121" selection-end-column="17" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -106,21 +103,29 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pom.xml">
+        <entry file="file://$PROJECT_DIR$/src/main/java/Board.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="132">
-              <caret line="23" column="36" lean-forward="true" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="36" />
+            <state relative-caret-position="159">
+              <caret line="667" column="25" lean-forward="true" selection-start-line="667" selection-start-column="25" selection-end-line="667" selection-end-column="25" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#11273#11274#0" expanded="true" />
+                <element signature="e#11312#11313#0" expanded="true" />
+                <element signature="e#27889#27890#0" expanded="true" />
+                <element signature="e#27922#27923#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/Board.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/Tile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2788">
-              <caret line="168" selection-start-line="168" selection-end-line="168" />
+            <state relative-caret-position="119">
+              <caret line="7" column="28" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="28" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#1395#1396#0" expanded="true" />
+                <element signature="e#1426#1427#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -177,8 +182,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/AIController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1054">
-              <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
+            <state relative-caret-position="313">
+              <caret line="104" column="47" lean-forward="true" selection-start-line="104" selection-start-column="47" selection-end-line="104" selection-end-column="47" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -199,25 +204,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>checkerThatCanCapture</find>
-      <find>makemo</find>
-      <find>getCheckers</find>
-      <find>checkerInBe</find>
-      <find>setGrid</find>
-      <find>clone</find>
-      <find>fillwithexi</find>
-      <find>checkerInBetwee</find>
-      <find>canCaptu</find>
-      <find>checkerInBet</find>
-      <find>makeMove</find>
-      <find>canCapture</find>
-      <find>circle</find>
-      <find>tiles[row][col]</find>
-      <find>makeMo</find>
-      <find>toggle</find>
-      <find>checkerInBetween</find>
-      <find>stage</find>
-      <find>rules</find>
       <find>blacksCaptured</find>
       <find>capturing</find>
       <find>alert.S</find>
@@ -229,6 +215,25 @@
       <find>crown</find>
       <find>new Check</find>
       <find>timer</find>
+      <find>isKing</find>
+      <find>isMoveValid</find>
+      <find>isTargetOccu</find>
+      <find>checkerIn</find>
+      <find>canMo</find>
+      <find>canMov</find>
+      <find>capture</find>
+      <find>isValidJu</find>
+      <find>isCheckerIn</find>
+      <find>canChecker</find>
+      <find>jumpBotRigh</find>
+      <find>isChecker</find>
+      <find>isChec</find>
+      <find>capture the</find>
+      <find>canCapture</find>
+      <find>isChe</find>
+      <find>ischeck</find>
+      <find>isCheck</find>
+      <find>makeMo</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -249,15 +254,15 @@
         <option value="$PROJECT_DIR$/src/main/resources/css/checkerfx.css" />
         <option value="$PROJECT_DIR$/src/main/java/BoardTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/Cell.java" />
-        <option value="$PROJECT_DIR$/src/main/java/Board.java" />
         <option value="$PROJECT_DIR$/src/main/java/Checker.java" />
         <option value="$PROJECT_DIR$/src/main/java/CheckersGame.java" />
         <option value="$PROJECT_DIR$/src/main/java/MovesAndScores.java" />
         <option value="$PROJECT_DIR$/src/main/java/UserController.java" />
         <option value="$PROJECT_DIR$/src/main/java/Move.java" />
-        <option value="$PROJECT_DIR$/src/main/java/AIController.java" />
-        <option value="$PROJECT_DIR$/src/main/java/GUI.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/AIController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/Board.java" />
+        <option value="$PROJECT_DIR$/src/main/java/GUI.java" />
       </list>
     </option>
   </component>
@@ -337,6 +342,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -376,7 +382,6 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -388,7 +393,7 @@
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="Groovy JUnit" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Groovy JUnit" value="groovy.util.GroovyTestCase" />
     <property name="create.test.in.the.same.root" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Desktop/jfxtras-labs-8.0-r1.jar!/" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -499,7 +504,7 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.1673774" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1673774" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -509,7 +514,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.21149674" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4749467" weight="0.27874187" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.86471945" weight="0.15184382" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.86471945" weight="0.28091106" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -517,6 +522,7 @@
       <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.5250533" side_tool="true" weight="0.21583514" />
       <window_info anchor="bottom" id="Version Control" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Messages" order="10" sideWeight="0.48614073" weight="0.3275488" />
+      <window_info anchor="right" id="Coverage" side_tool="true" weight="0.32995737" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -546,11 +552,27 @@
           <properties />
           <option name="timeStamp" value="8" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Board.java</url>
+          <line>450</line>
+          <properties />
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="breakpointCondition">
+      <expression>
+        <expression-string>move.getSource().getRow() == 1 &amp;&amp; move.getSource().getColumn() == 2 &amp;&amp; move.getTarget().getRow() == 2 &amp;&amp; move.getTarget().getColumn() == 1</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>move.getSource().getRow() == 1 &amp;&amp; move.getSource().getColumn() == 2 &amp;&amp; move.getTarget().getRow() == 2 &amp;&amp; move.getTarget().getColumn() ==</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>move.getSource().getRow() == 5 &amp;&amp; move.getSource().getColumn() == 4</expression-string>
         <language-id>JAVA</language-id>
@@ -754,22 +776,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/Cell.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="29" column="9" selection-start-line="29" selection-start-column="9" selection-end-line="29" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/Board.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2788">
-          <caret line="168" selection-start-line="168" selection-end-line="168" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/src/main/java/Cell.java" />
+    <entry file="file://$USER_HOME$/.m2/settings.xml">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/Checker.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -811,28 +820,50 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/AIController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1054">
-          <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
+        <state relative-caret-position="313">
+          <caret line="104" column="47" lean-forward="true" selection-start-line="104" selection-start-column="47" selection-end-line="104" selection-end-column="47" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.m2/settings.xml">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/Tile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="28" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="28" />
+          <folding>
+            <element signature="e#1395#1396#0" expanded="true" />
+            <element signature="e#1426#1427#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
-          <caret line="23" column="36" lean-forward="true" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="36" />
+          <caret line="23" column="36" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/Board.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="667" column="25" lean-forward="true" selection-start-line="667" selection-start-column="25" selection-end-line="667" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#11273#11274#0" expanded="true" />
+            <element signature="e#11312#11313#0" expanded="true" />
+            <element signature="e#27889#27890#0" expanded="true" />
+            <element signature="e#27922#27923#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/GUI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="386" lean-forward="true" selection-start-line="386" selection-end-line="386" />
+        <state relative-caret-position="-7096">
+          <caret line="121" column="17" selection-start-line="121" selection-start-column="17" selection-end-line="121" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

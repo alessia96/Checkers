@@ -101,7 +101,8 @@ public class AIController
         if (depth > maxDepth)
         {
             seCount++;
-            return board.getCheckers(Checker.Colour.BLACK).size() - board.getCheckers(Checker.Colour.RED).size();
+            return board.getHeuristics();
+            //return board.getCheckers(Checker.Colour.BLACK).size() - board.getCheckers(Checker.Colour.RED).size();
         }
 
         // all possible moves are generated for current player

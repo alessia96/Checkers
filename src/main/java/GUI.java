@@ -107,7 +107,7 @@ public class GUI extends Application
 
         if (match.getTurn() == CheckersGame.Player.AI)
         {
-                match.getAIController().updateBoard(board);
+                //match.getAIController().updateBoard(board);
                 move = match.getAIController().getAIMove(selectedDifficulty);
 
                 boolean valid = false;
@@ -120,7 +120,6 @@ public class GUI extends Application
                         valid = true;
                     }
                 }
-                //board.resetCheckerInBetween();
 
                 if (valid)
                 {
@@ -154,42 +153,6 @@ public class GUI extends Application
                     Runnable getMoveTask = () -> { getMove(); };
                     FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
                 }
-
-                /*// pass current user-selected difficulty to get an appropriate AI move
-                move = match.getAIController().getAIMove(selectedDifficulty);
-
-                // update info pane
-                movesLog.setText("Red moves from [" + move.getSource().getRow() + ", " + move.getSource().getColumn() +
-                        "] to [" + move.getTarget().getRow() + ", " + move.getTarget().getColumn() + "]" +
-                        "\n" + movesLog.getText());
-
-                // request move from the board
-                board.makeMove(move, false);
-
-                // keep turn to be AI turn if capture was made and another capture is available
-                if (board.wasCapturingMove() && board.canCapture(move.getTarget(), CheckersGame.Player.AI))
-                {
-                    match.setTurn(CheckersGame.Player.AI);
-                    //getNewMove = true;
-                }
-                else
-                {
-                    // allow player to interact
-                    currentlyDraggable = true;
-                }
-
-                generateGrid();
-
-                // check for game to be finished to throw respective information alerts
-                gameFinishedCheck();
-
-                if (getNewMove)
-                {
-                    getNewMove = false;
-                    // delay of 0.5 seconds and get a new move from the AI
-                    Runnable getMoveTask = () -> { getMove(); };
-                    FxTimer.runLater(Duration.ofMillis(500), getMoveTask);
-                }*/
         }
         else if (match.getTurn() == CheckersGame.Player.HUMAN)
         {
